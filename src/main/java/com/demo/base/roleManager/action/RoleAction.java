@@ -17,6 +17,7 @@ import com.demo.base.roleManager.response.QueryRoleResult;
 import com.demo.common.tree.TreeBuildFactory;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("roleAction")
+@Slf4j
 public class RoleAction extends BaseAction {
 
     @Autowired

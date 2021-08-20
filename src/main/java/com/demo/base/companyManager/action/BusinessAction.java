@@ -28,6 +28,7 @@ import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("businessAction")
+@Slf4j
 public class BusinessAction extends BaseAction {
 
     @Autowired

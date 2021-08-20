@@ -26,18 +26,6 @@ public class AuthorizationServiceImpl extends BaseServiceImpl implements Authori
     @Resource
     private AuthorizationDao authorizationDao;
 
-    /**
-     * 查询菜单列表
-     *
-     * @param findMenuParam
-     * @return
-     * @author wxc
-     * @date 2021/7/26 15:43
-     */
-    @Override
-    public List<MenuDTO> findMenuList(FindMenuParam findMenuParam) {
-        return authorizationDao.findMenuList(findMenuParam);
-    }
 
     /**
      * 通过角色id查询菜单

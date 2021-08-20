@@ -23,6 +23,7 @@ import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("userAction")
+@Slf4j
 public class UserAction extends BaseAction {
 
     @Autowired
@@ -225,6 +227,7 @@ public class UserAction extends BaseAction {
         if (userDO == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到用户信息!");
         }
+        resetPasswordParam.setPassword(passwordEncoder.encode(resetPasswordParam.getPassword()));
         //重置密码为随机六位数,由前台生成
         userService.resetPassword(resetPasswordParam);
         return returnSuccess("重置密码成功!");

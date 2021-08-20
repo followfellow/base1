@@ -55,25 +55,6 @@ public class AuthorizationAction extends BaseAction {
     @Autowired
     private UserService userService;
 
-//    /**
-//     * 查询全部菜单
-//     *
-//     * @author wxc
-//     * @date 2021/7/26 11:18
-//     */
-//    @RequestMapping("findAllMenu")
-//    @CommonBusiness(logRemark = "查询全部菜单")
-//    public Object findAllMenu() {
-//        List<MenuDTO> menuDTOList = authorizationService.findMenuList(null);
-//        List<FindMenuResult> findMenuResultList = menuDTOList.stream().map(menuDTO -> {
-//            FindMenuResult findMenuResult = FindMenuResult.builder().build();
-//            BeanUtil.copyProperties(menuDTO, findMenuResult, CopyOptions.create().ignoreNullValue());
-//            return findMenuResult;
-//        }).collect(Collectors.toList());
-//        findMenuResultList = new TreeBuildFactory<FindMenuResult>().doTreeBuild(findMenuResultList);
-//        return returnSuccess("查询全部菜单成功!", findMenuResultList);
-//    }
-
 
     /**
      * 查询当前用户角色

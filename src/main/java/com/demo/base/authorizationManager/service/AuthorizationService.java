@@ -15,15 +15,6 @@ import java.util.List;
  */
 public interface AuthorizationService {
 
-    /**
-     * 查询菜单列表
-     *
-     * @param findMenuParam
-     * @return
-     * @author sw
-     * @date 2021-06-19 10:14:27
-     */
-    List<MenuDTO> findMenuList(FindMenuParam findMenuParam);
 
 
     /**
