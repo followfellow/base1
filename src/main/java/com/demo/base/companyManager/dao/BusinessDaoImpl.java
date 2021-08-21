@@ -170,7 +170,7 @@ public class BusinessDaoImpl extends BaseDAOHibernateImpl implements BusinessDao
                 " from org_business_t t1" +
                 " left join sys_juris_group_org_t t2 on t1.businessId = t2.businessId " +
                 " left join sys_juris_group_t t3 on t2.jurisGroupId = t3.jurisGroupId " +
-                " where 1 = 1 ";
+                " where 1 = 1 and t1.businessType <> 0";
         if (findMerchantUserParam.getBusinessType() != null) {
             sql += " and t1.businessType =  " + findMerchantUserParam.getBusinessType();
         }

@@ -9,8 +9,7 @@ import com.demo.base.companyManager.po.BusinessDO;
 import com.demo.base.companyManager.po.JurisGroupOrgDO;
 import com.demo.base.companyManager.request.*;
 import com.demo.base.jurisGroupManager.request.FindGroupBusinessParam;
-import com.demo.base.roleManager.po.RoleDO;
-import com.demo.base.userManager.po.UserDO;
+import com.demo.dbutils.BaseApplicationDO;
 import com.demo.utils.StringUtils;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
@@ -34,18 +33,16 @@ public class BusinessServiceImpl extends BaseServiceImpl implements BusinessServ
     /**
      * 添加单位
      *
-     * @param businessDO
-     * @param userDO
-     * @param roleDO
+     * @param baseApplicationDOList
      * @author wxc
      * @date 2021/7/23 10:09
      */
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void addBusiness(BusinessDO businessDO, UserDO userDO, RoleDO roleDO) {
-        businessDao.save(businessDO);
-        businessDao.save(userDO);
-        businessDao.save(roleDO);
+    public void addBusiness(List<BaseApplicationDO> baseApplicationDOList) {
+        if (CollectionUtil.isNotEmpty(baseApplicationDOList)) {
+            baseApplicationDOList.forEach(baseApplicationDO -> businessDao.save(baseApplicationDO));
+        }
     }
 
     /**

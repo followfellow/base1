@@ -20,11 +20,13 @@ import com.demo.base.jurisGroupManager.po.JurisGroupDO;
 import com.demo.base.jurisGroupManager.request.FindGroupBusinessParam;
 import com.demo.base.jurisGroupManager.service.JurisGroupService;
 import com.demo.base.roleManager.po.RoleDO;
+import com.demo.base.userManager.po.RoleJoinUserDO;
 import com.demo.base.userManager.po.UserDO;
 import com.demo.base.userManager.service.UserService;
 import com.demo.contants.CodeConstants;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
+import com.demo.dbutils.BaseApplicationDO;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
@@ -382,6 +384,7 @@ public class BusinessAction extends BaseAction {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, checkResult);
         }
         String tip = switchTip(addBusinessParam.getBusinessType());
+        List<BaseApplicationDO> baseApplicationDOList = new ArrayList<>();
         BusinessDO businessDO = BusinessDO.builder()
                 .businessId(numberMachineUtils.getTableID(NumberMachineConstants.ORG_BUSINESS_TABLE_ID_SEQ))
                 //-------------待修改
@@ -413,6 +416,7 @@ public class BusinessAction extends BaseAction {
             default:
                 break;
         }
+        baseApplicationDOList.add(businessDO);
         //生成单位系统管理员
         UserDO userDO = UserDO.builder()
                 .userId(numberMachineUtils.getTableID(NumberMachineConstants.USER_TABLE_ID_SEQ))
@@ -428,6 +432,7 @@ public class BusinessAction extends BaseAction {
                 .userName(addBusinessParam.getUserName())
                 .validTime(addBusinessParam.getValidTime())
                 .build();
+        baseApplicationDOList.add(userDO);
         //生成单位系统管理员角色
         RoleDO roleDO = RoleDO.builder()
                 .roleId(numberMachineUtils.getTableID(NumberMachineConstants.ROLE_TABLE_ID_SEQ))
@@ -436,7 +441,16 @@ public class BusinessAction extends BaseAction {
                 //系统管理员标识
                 .rolePid(0L)
                 .build();
-        businessService.addBusiness(businessDO, userDO, roleDO);
+        baseApplicationDOList.add(roleDO);
+        //生成单位系统管理员角色绑定关系
+        RoleJoinUserDO roleJoinUserDO = RoleJoinUserDO.builder()
+                .roleJoinUserId(numberMachineUtils.getTableID(NumberMachineConstants.ROLE_JOIN_USER_TABLE_ID_SEQ))
+                .businessId(businessDO.getBusinessId())
+                .roleId(roleDO.getRoleId())
+                .userId(userDO.getUserId())
+                .build();
+        baseApplicationDOList.add(roleJoinUserDO);
+        businessService.addBusiness(baseApplicationDOList);
         return returnSuccess("添加" + tip + "成功!");
     }
 

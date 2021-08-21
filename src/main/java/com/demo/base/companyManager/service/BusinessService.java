@@ -8,6 +8,7 @@ import com.demo.base.companyManager.request.*;
 import com.demo.base.jurisGroupManager.request.FindGroupBusinessParam;
 import com.demo.base.roleManager.po.RoleDO;
 import com.demo.base.userManager.po.UserDO;
+import com.demo.dbutils.BaseApplicationDO;
 
 import java.util.List;
 
@@ -23,13 +24,11 @@ public interface BusinessService {
     /**
      * 添加单位
      *
-     * @param businessDO
-     * @param userDO
-     * @param roleDO
+     * @param baseApplicationDOList
      * @author wxc
      * @date 2021/7/23 10:09
      */
-    void addBusiness(BusinessDO businessDO, UserDO userDO, RoleDO roleDO);
+    void addBusiness(List<BaseApplicationDO> baseApplicationDOList);
 
     /**
      * 通过id查询单位
@@ -181,4 +180,5 @@ public interface BusinessService {
      * @date 2021/8/2 14:24
      */
     List<BusinessDTO> findBusinessSelect(FindBusinessSelectParam findBusinessSelectParam);
+
 }
