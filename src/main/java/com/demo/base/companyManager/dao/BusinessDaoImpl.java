@@ -112,7 +112,7 @@ public class BusinessDaoImpl extends BaseDAOHibernateImpl implements BusinessDao
      */
     @Override
     public List<BusinessDTO> findGroupBusiness(FindGroupBusinessParam findGroupBusinessParam, QueryPage queryPage) {
-        String sql = "select t1.businessId, t1.businessAllName ,t1.businessShortName,t1.businessType,t1.areaNameStr,t1.contactName t1.destinationType" +
+        String sql = "select t1.businessId, t1.businessAllName ,t1.businessShortName,t1.businessType,t1.areaNameStr,t1.contactName, t1.destinationType" +
                 " from org_business_t t1, sys_juris_group_org_t t2" +
                 " where t1.businessId = t2.businessId ";
         sql += " and t2.jurisGroupId =  " + findGroupBusinessParam.getJurisGroupId();
@@ -139,7 +139,7 @@ public class BusinessDaoImpl extends BaseDAOHibernateImpl implements BusinessDao
      */
     @Override
     public List<BusinessDTO> findNeverInGroupBusiness(FindGroupBusinessParam findGroupBusinessParam, QueryPage queryPage) {
-        String sql = "select t1.businessId, t1.businessAllName ,t1.businessShortName,t1.businessType,t1.areaNameStr,t1.contactName t1.destinationType" +
+        String sql = "select t1.businessId, t1.businessAllName ,t1.businessShortName,t1.businessType,t1.areaNameStr,t1.contactName ,t1.destinationType" +
                 " from org_business_t t1" +
                 " where 1 = 1 ";
         if (findGroupBusinessParam.getBusinessType() != null) {

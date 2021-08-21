@@ -72,7 +72,7 @@ public class RoleDaoMysqlImpl extends BaseDAOHibernateImpl implements RoleDao {
      */
     @Override
     public List<RoleDTO> findRoleByUserId(Long userId) {
-        String sql = " select t2.roleId,t2.roleName from sys_role_join_user_t t1 " +
+        String sql = " select t2.roleId,t2.roleName,t2.rolePid from sys_role_join_user_t t1 " +
                 " left join sys_role_t t2 on t1.roleId = t2.roleId " +
                 " where t1.userId  = " + userId;
         return findObjectBySql(sql, RoleDTO.class);

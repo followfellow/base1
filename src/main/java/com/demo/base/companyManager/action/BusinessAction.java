@@ -197,6 +197,9 @@ public class BusinessAction extends BaseAction {
         if (jurisGroupDO == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到分组信息!");
         }
+        if (jurisGroupDO.getJurisGroupPid() == 0L) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "系统管理员组无法添加单位!");
+        }
         List<JurisGroupOrgDO> jurisGroupOrgDOList = new ArrayList<>();
         SequenceNumberBizBean sequenceNumberBizBean = numberMachineUtils.getTableIDByCount(NumberMachineConstants.SYS_JURIS_GROUP_ORG_TABLE_ID_SEQ, businessIdList.size());
         businessIdList.forEach(businessId -> jurisGroupOrgDOList.add(JurisGroupOrgDO.builder()

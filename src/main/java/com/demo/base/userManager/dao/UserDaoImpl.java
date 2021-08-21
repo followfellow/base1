@@ -76,8 +76,8 @@ public class UserDaoImpl extends BaseDAOHibernateImpl implements UserDao {
                 " from  sys_user_t t1," +
                 " sys_role_join_user_t t2" +
                 " where t1.userId = t2.userId " +
-                " and a.userIdentity = " + CodeConstants.USER_IDENTITY_PTYH +
-                " and a.businessId = " + getCurrUserOrgId() +
+                " and t1.userIdentity = " + CodeConstants.USER_IDENTITY_PTYH +
+                " and t1.businessId = " + getCurrUserOrgId() +
                 " and  t2.roleId =  " + findRoleUserParam.getRoleId();
         if (StringUtils.isNotBlank(findRoleUserParam.getCondition())) {
             String condition = StringEscapeUtils.escapeSql(findRoleUserParam.getCondition());

@@ -10,6 +10,7 @@ import com.demo.aop.CommonBusiness;
 import com.demo.base.authorizationManager.po.JurisGroupMenuDO;
 import com.demo.base.authorizationManager.po.RoleMenuDO;
 import com.demo.base.authorizationManager.request.*;
+import com.demo.base.authorizationManager.response.FindUserAuthResult;
 import com.demo.base.authorizationManager.service.AuthorizationService;
 import com.demo.base.jurisGroupManager.dto.JurisGroupDTO;
 import com.demo.base.jurisGroupManager.po.JurisGroupDO;
@@ -17,7 +18,7 @@ import com.demo.base.jurisGroupManager.service.JurisGroupService;
 import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.roleManager.po.RoleDO;
 import com.demo.base.roleManager.service.RoleService;
-import com.demo.base.userManager.dto.SysUserDTO;
+import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.po.UserDO;
 import com.demo.base.userManager.service.UserService;
 import com.demo.common.tree.TreeBuildFactory;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,12 +65,12 @@ public class AuthorizationAction extends BaseAction {
     @RequestMapping("findCurrentUserRole")
     @CommonBusiness(logRemark = "查询当前用户角色")
     public Object findCurrentUserRole() {
-        SysUserDTO sysUserDTO = getCurrentUser(SysUserDTO.class);
-        UserDO userDO = userService.queryUserById(sysUserDTO.getUserId());
+        UserDTO userDTO = getCurrentUser(UserDTO.class);
+        UserDO userDO = userService.queryUserById(userDTO.getUserId());
         if (userDO == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到用户信息!");
         }
-        return returnSuccess("查询当前用户角色成功!", roleService.findRoleByUserId(sysUserDTO.getUserId()));
+        return returnSuccess("查询当前用户角色成功!", roleService.findRoleByUserId(userDTO.getUserId()));
     }
 
 
@@ -92,8 +92,8 @@ public class AuthorizationAction extends BaseAction {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到角色信息!");
         }
         //设置当前登录角色缓存
-        SysUserDTO sysUserDTO = getCurrentUser(SysUserDTO.class);
-        redisUtils.set(sysUserDTO.getUserId() + "--roleId", roleDO.getRoleId());
+        UserDTO userDTO = getCurrentUser(UserDTO.class);
+        redisUtils.set(userDTO.getUserId() + "--roleId", roleDO.getRoleId());
         List<MenuDTO> menuDTOList;
         //系统管理员
         if (roleDO.getRolePid() == 0L) {
@@ -135,20 +135,32 @@ public class AuthorizationAction extends BaseAction {
         if (findMenuInfoByUserParam == null || findMenuInfoByUserParam.getUserId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询用户!");
         }
-        SysUserDTO sysUserDTO = getCurrentUser(SysUserDTO.class);
         UserDO userDO = userService.queryUserById(findMenuInfoByUserParam.getUserId());
         if (userDO == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到用户信息!");
         }
-        List<RoleDTO> roleDTOList = roleService.findRoleByUserId(sysUserDTO.getUserId());
+        List<RoleDTO> roleDTOList = roleService.findRoleByUserId(userDO.getUserId());
         if (CollectionUtil.isEmpty(roleDTOList)) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "当前用户尚未绑定角色!");
         }
         if (roleDTOList.stream().anyMatch(roleDTO -> roleDTO.getRolePid() == 0L)) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "无法查看系统管理员权限!");
         }
-        Map<String, List<MenuDTO>> roleMenuMap = roleDTOList.stream().collect(Collectors.toMap(RoleDTO::getRoleName, roleDTO -> authorizationService.findMenuByRole(roleDTO.getRoleId())));
-        return returnSuccess("查询用户角色权限成功!", roleMenuMap);
+        List<FindUserAuthResult> findUserAuthResults = roleDTOList.stream().map(roleDTO ->
+                FindUserAuthResult
+                        .builder()
+                        .roleName(roleDTO.getRoleName())
+                        .findMenuResultList(new TreeBuildFactory<FindMenuResult>().doTreeBuild(authorizationService.findMenuByRole(roleDTO.getRoleId())
+                                .stream()
+                                .map(menuDTO -> {
+                                    FindMenuResult findMenuResult = FindMenuResult.builder().build();
+                                    BeanUtil.copyProperties(menuDTO, findMenuResult, CopyOptions.create().ignoreNullValue());
+                                    return findMenuResult;
+                                })
+                                .collect(Collectors.toList())))
+                        .build()
+        ).collect(Collectors.toList());
+        return returnSuccess("查询用户角色权限成功!", findUserAuthResults);
     }
 
     /**
@@ -297,8 +309,8 @@ public class AuthorizationAction extends BaseAction {
         if (roleDO.getRolePid() == 0L) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "系统管理员权限无法修改!");
         }
-        SysUserDTO sysUserDTO = getCurrentUser(SysUserDTO.class);
-        Object role = redisUtils.get(sysUserDTO.getUserId() + "--roleId");
+        UserDTO userDTO = getCurrentUser(UserDTO.class);
+        Object role = redisUtils.get(userDTO.getUserId() + "--roleId");
         if (role == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "当前登录角色异常!");
         }
@@ -372,12 +384,12 @@ public class AuthorizationAction extends BaseAction {
         if (jurisGroupDO == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到分组信息!");
         }
-        if(jurisGroupDO.getJurisGroupPid()==0L){
+        if (jurisGroupDO.getJurisGroupPid() == 0L) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "不能修改系统管理员权限!");
         }
         //验证当前登录角色权限
-        SysUserDTO sysUserDTO = getCurrentUser(SysUserDTO.class);
-        Object role = redisUtils.get(sysUserDTO.getUserId() + "--roleId");
+        UserDTO userDTO = getCurrentUser(UserDTO.class);
+        Object role = redisUtils.get(userDTO.getUserId() + "--roleId");
         if (role == null) {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "当前登录角色异常!");
         }
