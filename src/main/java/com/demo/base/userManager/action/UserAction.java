@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @date 2021-06-13 09:36:21
  */
 @RestController
-@RequestMapping("userAction")
+@RequestMapping(Constants.OAPI+"userAction")
 @Slf4j
 public class UserAction extends BaseAction {
 
@@ -64,7 +64,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("findUserList")
     @CommonBusiness(logRemark = "查询用户列表")
-//    @PreAuthorize("hasAuthority('userAction:findUserList')")
+    @PreAuthorize("hasAuthority('userAction:findUserList')")
     public Object findUserList(@RequestBody(required = false) FindUserParam findUserParam) {
         if (findUserParam == null) {
             findUserParam = FindUserParam.builder().build();
