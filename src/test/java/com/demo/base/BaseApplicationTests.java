@@ -26,9 +26,9 @@ class BaseApplicationTests {
 
     @Test
     public void getPass() {
-        String url1 = "jdbc:mysql://192.168.18.207:3306/tyhj_ypt_base?useUnicode=true&characterEncoding=UTF8&allowMultiQueries=true";
+        String url1 = "jdbc:mysql://192.168.20.196:3306/zhypt_base_3.0?useUnicode=true&characterEncoding=UTF8&allowMultiQueries=true";
         String username = "root";
-        String password1 = "w5c6-4i9$%T@&&p9H";
+        String password1 = "demo@*demo@*123";
         String url = encryptor.encrypt(url1);
         String name = encryptor.encrypt(username);
         String password = encryptor.encrypt(password1);

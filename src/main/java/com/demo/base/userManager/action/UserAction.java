@@ -25,6 +25,7 @@ import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("findUserList")
     @CommonBusiness(logRemark = "查询用户列表")
+//    @PreAuthorize("hasAuthority('userAction:findUserList')")
     public Object findUserList(@RequestBody(required = false) FindUserParam findUserParam) {
         if (findUserParam == null) {
             findUserParam = FindUserParam.builder().build();
