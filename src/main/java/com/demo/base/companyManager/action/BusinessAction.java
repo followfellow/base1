@@ -32,6 +32,7 @@ import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * @date:2021/7/22 15:52
  */
 @RestController
-@RequestMapping("businessAction")
+@RequestMapping(Constants.OAPI+"businessAction")
 @Slf4j
 public class BusinessAction extends BaseAction {
 
@@ -70,6 +71,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findBusinessList")
     @CommonBusiness(logRemark = "查询单位列表")
+    @PreAuthorize("hasAuthority('businessAction:findBusinessList')")
     public Object findBusinessList(@RequestBody(required = false) FindBusinessParam findBusinessParam) {
         if (findBusinessParam == null || findBusinessParam.getBusinessType() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择单位类型!");
@@ -97,6 +99,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findBusinessSelect")
     @CommonBusiness(logRemark = "获取单位下拉框数据")
+    @PreAuthorize("hasAuthority('businessAction:findBusinessSelect')")
     public Object findBusinessSelect(@RequestBody(required = false) FindBusinessSelectParam findBusinessSelectParam) {
         if (findBusinessSelectParam == null || findBusinessSelectParam.getBusinessType() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择单位类型!");
@@ -117,6 +120,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findBusinessUserList")
     @CommonBusiness(logRemark = "查询商家用户列表")
+    @PreAuthorize("hasAuthority('businessAction:findBusinessUserList')")
     public Object findBusinessUserList(@RequestBody(required = false) FindMerchantUserParam findMerchantUserParam) {
         if (findMerchantUserParam == null) {
             findMerchantUserParam = FindMerchantUserParam.builder().build();
@@ -155,6 +159,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findBusinessUserInfo")
     @CommonBusiness(logRemark = "查询商家用户详情")
+    @PreAuthorize("hasAuthority('businessAction:findBusinessUserInfo')")
     public Object findBusinessUserInfo(@RequestBody(required = false) QueryBusinessParam queryBusinessParam) {
         if (queryBusinessParam == null || queryBusinessParam.getBusinessId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择商家用户!");
@@ -174,6 +179,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findOperation")
     @CommonBusiness(logRemark = "查询运营商")
+    @PreAuthorize("hasAuthority('businessAction:findOperation')")
     public Object findOperation() {
         return returnSuccess("查询运营商成功!", businessService.findOperation());
     }
@@ -187,6 +193,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("operateGroupBusiness")
     @CommonBusiness(logRemark = "添加分组单位")
+    @PreAuthorize("hasAuthority('businessAction:operateGroupBusiness')")
     public Object operateGroupBusiness(@RequestBody(required = false) OperateGroupBusinessParam operateGroupBusinessParam) {
         if (operateGroupBusinessParam == null || operateGroupBusinessParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择分组!");
@@ -222,6 +229,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findGroupBusiness")
     @CommonBusiness(logRemark = "查询分组单位列表")
+    @PreAuthorize("hasAuthority('businessAction:findGroupBusiness')")
     public Object findGroupBusiness(@RequestBody(required = false) FindGroupBusinessParam findGroupBusinessParam) {
         if (findGroupBusinessParam == null || findGroupBusinessParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择分组!");
@@ -254,6 +262,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("deleteGroupBusiness")
     @CommonBusiness(logRemark = "删除单位分组")
+    @PreAuthorize("hasAuthority('businessAction:deleteGroupBusiness')")
     public Object deleteGroupBusiness(@RequestBody(required = false) DeleteGroupBusinessParam deleteGroupBusinessParam) {
         if (deleteGroupBusinessParam == null || deleteGroupBusinessParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择分组!");
@@ -274,6 +283,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("findNeverInGroupBusiness")
     @CommonBusiness(logRemark = "查询未分组单位列表")
+    @PreAuthorize("hasAuthority('businessAction:findNeverInGroupBusiness')")
     public Object findNeverInGroupBusiness(@RequestBody(required = false) FindGroupBusinessParam findGroupBusinessParam) {
         if (findGroupBusinessParam == null) {
             findGroupBusinessParam = FindGroupBusinessParam.builder().build();
@@ -300,6 +310,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("modifyOperation")
     @CommonBusiness(logRemark = "修改运营商")
+    @PreAuthorize("hasAuthority('businessAction:modifyOperation')")
     public Object modifyOperation(@RequestBody(required = false) ModifyOperationParam modifyOperationParam) {
         String checkResult = checkModifyOperation(modifyOperationParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -378,6 +389,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("addBusiness")
     @CommonBusiness(logRemark = "添加单位")
+    @PreAuthorize("hasAuthority('businessAction:addBusiness')")
     public Object addBusiness(@RequestBody(required = false) AddBusinessParam addBusinessParam) {
         String checkResult = checkAddBusinessParam(addBusinessParam);
         if (!StringUtils.isEmpty(checkResult)) {
@@ -533,6 +545,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("queryBusinessById")
     @CommonBusiness(logRemark = "根据id查询单位")
+    @PreAuthorize("hasAuthority('businessAction:queryBusinessById')")
     public Object queryBusinessById(@RequestBody(required = false) QueryBusinessParam queryBusinessParam) {
 
         if (queryBusinessParam == null || queryBusinessParam.getBusinessType() == null) {
@@ -562,6 +575,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("updateBusiness")
     @CommonBusiness(logRemark = "修改单位")
+    @PreAuthorize("hasAuthority('businessAction:updateBusiness')")
     public Object updateBusiness(@RequestBody(required = false) UpdateBusinessParam updateBusinessParam) {
         String resultError = checkUpdateBusinessParam(updateBusinessParam);
         if (!StringUtils.isEmpty(resultError)) {
@@ -662,6 +676,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("resetPassword")
     @CommonBusiness(logRemark = "重置密码")
+    @PreAuthorize("hasAuthority('businessAction:resetPassword')")
     public Object resetPassword(@RequestBody(required = false) ResetPasswordParam resetPasswordParam) {
         if (resetPasswordParam == null || resetPasswordParam.getBusinessType() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择单位类型!");
@@ -693,6 +708,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("modifyStatus")
     @CommonBusiness(logRemark = "修改状态")
+    @PreAuthorize("hasAuthority('businessAction:modifyStatus')")
     public Object modifyStatus(@RequestBody(required = false) ModifyStatusParam modifyStatusParam) {
         if (modifyStatusParam == null || modifyStatusParam.getBusinessType() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择单位类型!");
@@ -726,6 +742,7 @@ public class BusinessAction extends BaseAction {
      */
     @RequestMapping("deleteBusiness")
     @CommonBusiness(logRemark = "删除单位")
+    @PreAuthorize("hasAuthority('businessAction:deleteBusiness')")
     public Object deleteBusiness(@RequestBody(required = false) DeleteBusinessParam deleteBusinessParam) {
         if (deleteBusinessParam == null || deleteBusinessParam.getBusinessType() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择单位类型!");
