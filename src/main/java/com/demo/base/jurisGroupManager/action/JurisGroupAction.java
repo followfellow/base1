@@ -16,10 +16,12 @@ import com.demo.base.jurisGroupManager.response.FindJurisGroupResult;
 import com.demo.base.jurisGroupManager.response.QueryJurisGroupResult;
 import com.demo.base.jurisGroupManager.service.JurisGroupService;
 import com.demo.common.tree.TreeBuildFactory;
+import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping("jurisGroupAction")
+@RequestMapping(Constants.OAPI+"jurisGroupAction")
 @Slf4j
 public class JurisGroupAction extends BaseAction {
 
@@ -54,6 +56,7 @@ public class JurisGroupAction extends BaseAction {
      */
     @RequestMapping("findJurisGroupList")
     @CommonBusiness(logRemark = "查询分组")
+    @PreAuthorize("hasAuthority('jurisGroupAction:findJurisGroupList')")
     public Object findJurisGroupList() {
         List<JurisGroupDTO> jurisGroupList = jurisGroupService.findJurisGroupList();
         List<FindJurisGroupResult> jurisGroupResultList = jurisGroupList.stream().map(jurisGroupDTO -> {
@@ -75,6 +78,7 @@ public class JurisGroupAction extends BaseAction {
      */
     @RequestMapping("queryJurisGroupById")
     @CommonBusiness(logRemark = "根据id查询分组")
+    @PreAuthorize("hasAuthority('jurisGroupAction:queryJurisGroupById')")
     public Object queryJurisGroupById(@RequestBody(required = false) QueryJurisGroupParam queryJurisGroupParam) {
         if (queryJurisGroupParam == null || queryJurisGroupParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询分组!");
@@ -95,6 +99,7 @@ public class JurisGroupAction extends BaseAction {
      */
     @RequestMapping("addJurisGroup")
     @CommonBusiness(logRemark = "添加分组")
+    @PreAuthorize("hasAuthority('jurisGroupAction:addJurisGroup')")
     public Object addJurisGroup(@RequestBody(required = false) AddJurisGroupParam addJurisGroupParam) {
         String resultError = checkAddJurisGroupParam(addJurisGroupParam);
         if (!StringUtils.isEmpty(resultError)) {
@@ -118,6 +123,7 @@ public class JurisGroupAction extends BaseAction {
      */
     @RequestMapping("updateJurisGroup")
     @CommonBusiness(logRemark = "修改分组")
+    @PreAuthorize("hasAuthority('jurisGroupAction:updateJurisGroup')")
     public Object updateJurisGroup(@RequestBody(required = false) UpdateJurisGroupParam updateJurisGroupParam) {
         String resultError = checkUpdateJurisGroupParam(updateJurisGroupParam);
         if (!StringUtils.isEmpty(resultError)) {
@@ -145,6 +151,7 @@ public class JurisGroupAction extends BaseAction {
      */
     @RequestMapping("deleteJurisGroup")
     @CommonBusiness(logRemark = "删除分组")
+    @PreAuthorize("hasAuthority('jurisGroupAction:deleteJurisGroup')")
     public Object deleteJurisGroup(@RequestBody(required = false) DeleteJurisGroupParam deleteJurisGroupParam) {
         if (deleteJurisGroupParam == null || deleteJurisGroupParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除分组");
