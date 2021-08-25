@@ -22,11 +22,13 @@ import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.po.UserDO;
 import com.demo.base.userManager.service.UserService;
 import com.demo.common.tree.TreeBuildFactory;
+import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.system.menuManager.dto.MenuDTO;
 import com.demo.system.menuManager.response.FindMenuResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +44,7 @@ import java.util.stream.Collectors;
  * @date 2021-06-19 10:14:27
  */
 @RestController
-@RequestMapping("authorizationAction")
+@RequestMapping(Constants.OAPI+"authorizationAction")
 @Slf4j
 public class AuthorizationAction extends BaseAction {
 
@@ -64,6 +66,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findCurrentUserRole")
     @CommonBusiness(logRemark = "查询当前用户角色")
+//    @PreAuthorize("hasAuthority('authorizationAction:findCurrentUserRole')")
     public Object findCurrentUserRole() {
         UserDTO userDTO = getCurrentUser(UserDTO.class);
         UserDO userDO = userService.queryUserById(userDTO.getUserId());
@@ -83,6 +86,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuByCurrentRole")
     @CommonBusiness(logRemark = "根据当前用户选择角色查询菜单权限")
+//    @PreAuthorize("hasAuthority('authorizationAction:findMenuByCurrentRole')")
     public Object findMenuByCurrentUser(@RequestBody(required = false) FindMenuByRoleParam findMenuByRoleParam) {
         if (findMenuByRoleParam == null || findMenuByRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择角色!");
@@ -131,6 +135,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuByUser")
     @CommonBusiness(logRemark = "根据用户查询菜单权限信息")
+    @PreAuthorize("hasAuthority('authorizationAction:findMenuByUser')")
     public Object findMenuInfoByUser(@RequestBody(required = false) FindMenuInfoByUserParam findMenuInfoByUserParam) {
         if (findMenuInfoByUserParam == null || findMenuInfoByUserParam.getUserId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询用户!");
@@ -172,6 +177,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuByRole")
     @CommonBusiness(logRemark = "根据角色获取菜单权限")
+    @PreAuthorize("hasAuthority('authorizationAction:findMenuByRole')")
     public Object findMenuByRole(@RequestBody(required = false) FindMenuByRoleParam findMenuByRoleParam) {
         if (findMenuByRoleParam == null || findMenuByRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询角色!");
@@ -218,6 +224,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuIdsByRole")
     @CommonBusiness(logRemark = "根据角色id获取菜单权限勾选回显")
+    @PreAuthorize("hasAuthority('authorizationAction:findMenuIdsByRole')")
     public Object findMenuIdsByRole(@RequestBody(required = false) FindMenuByRoleParam findMenuByRoleParam) {
         if (findMenuByRoleParam == null || findMenuByRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询角色!");
@@ -239,6 +246,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuByGroup")
     @CommonBusiness(logRemark = "根据分组获取菜单权限")
+    @PreAuthorize("hasAuthority('authorizationAction:findMenuByGroup')")
     public Object findMenuByGroup(@RequestBody(required = false) FindMenuByJurisGroupParam findMenuByJurisGroupParam) {
         if (findMenuByJurisGroupParam == null || findMenuByJurisGroupParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择分组!");
@@ -268,6 +276,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("findMenuIdsByGroup")
     @CommonBusiness(logRemark = "根据分组id获取菜单权限勾选回显")
+    @PreAuthorize("hasAuthority('authorizationAction:findMenuIdsByGroup')")
     public Object findMenuIdsByGroup(@RequestBody(required = false) FindMenuByJurisGroupParam findMenuByJurisGroupParam) {
         if (findMenuByJurisGroupParam == null || findMenuByJurisGroupParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择分组!");
@@ -292,6 +301,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("operateRoleMenu")
     @CommonBusiness(logRemark = "操作角色菜单授权")
+    @PreAuthorize("hasAuthority('authorizationAction:operateRoleMenu')")
     public Object operateRoleMenu(@RequestBody(required = false) OperateRoleMenuParam operateRoleMenuParam, HttpServletRequest request) {
         if (operateRoleMenuParam == null || operateRoleMenuParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择操作角色");
@@ -371,6 +381,7 @@ public class AuthorizationAction extends BaseAction {
      */
     @RequestMapping("operateGroupMenu")
     @CommonBusiness(logRemark = "操作分组菜单授权")
+    @PreAuthorize("hasAuthority('authorizationAction:operateGroupMenu')")
     public Object operateGroupMenu(@RequestBody(required = false) OperateGroupMenuParam operateGroupMenuParam, HttpServletRequest request) {
         if (operateGroupMenuParam == null || operateGroupMenuParam.getJurisGroupId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择操作分组!");
