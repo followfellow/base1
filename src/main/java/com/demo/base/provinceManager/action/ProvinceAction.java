@@ -15,6 +15,7 @@ import com.demo.base.provinceManager.response.QueryProvinceResult;
 import com.demo.base.provinceManager.service.ProvinceService;
 import com.demo.cache.district.DistrictRedisUtils;
 import com.demo.cache.province.ProvinceRedisUtils;
+import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -121,6 +122,11 @@ public class ProvinceAction extends BaseAction {
 //                .businessId(getCurrUserOrgId())
                 .build();
         BeanUtil.copyProperties(addProvinceParam, provinceDO, CopyOptions.create().ignoreNullValue());
+        try {
+            provinceDO.setProvinceChar(PinyinUtils.toPinYinUppercase(addProvinceParam.getProvinceName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "全称转换拼音失败!");
+        }
         provinceService.addProvince(provinceDO);
         provinceRedisUtils.updateProvince(provinceDO.getProvinceId());
         return returnSuccess("添加省份成功!");
@@ -136,6 +142,15 @@ public class ProvinceAction extends BaseAction {
     private String checkAddProvinceParam(AddProvinceParam addProvinceParam) {
         if (addProvinceParam == null) {
             return "请输入省份信息!";
+        }
+        if (StringUtils.isEmpty(addProvinceParam.getProvinceName())) {
+            return "请输入省份名称!";
+        }
+        if (provinceService.checkNameIfExist(addProvinceParam.getProvinceName(), null)) {
+            return "省份名称已存在!";
+        }
+        if (addProvinceParam.getCertificateNo() == null) {
+            return "请输入省份身份证编号";
         }
         return null;
     }
@@ -160,6 +175,11 @@ public class ProvinceAction extends BaseAction {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到省份信息!");
         }
         BeanUtil.copyProperties(updateProvinceParam, provinceDO, CopyOptions.create().ignoreNullValue());
+        try {
+            provinceDO.setProvinceChar(PinyinUtils.toPinYinUppercase(updateProvinceParam.getProvinceName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "全称转换拼音失败!");
+        }
         provinceService.updateProvince(provinceDO);
         provinceRedisUtils.updateProvince(provinceDO.getProvinceId());
         return returnSuccess("修改省份成功!");
@@ -174,7 +194,13 @@ public class ProvinceAction extends BaseAction {
      */
     private String checkUpdateProvinceParam(UpdateProvinceParam updateProvinceParam) {
         if (updateProvinceParam == null || updateProvinceParam.getProvinceId() == null) {
-            return "请选择省份!";
+            return "请选择修改省份!";
+        }
+        if (StringUtils.isEmpty(updateProvinceParam.getProvinceName())) {
+            return "请输入省份名称!";
+        }
+        if (provinceService.checkNameIfExist(updateProvinceParam.getProvinceName(), updateProvinceParam.getProvinceId())) {
+            return "省份名称已存在!";
         }
         return null;
     }

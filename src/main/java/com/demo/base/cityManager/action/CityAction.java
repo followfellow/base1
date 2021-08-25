@@ -15,6 +15,7 @@ import com.demo.base.cityManager.service.CityService;
 import com.demo.cache.city.CityRedisUtils;
 import com.demo.cache.country.CountryRedisUtils;
 import com.demo.contants.NumberMachineConstants;
+import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,6 +94,11 @@ public class CityAction extends BaseAction {
                 .cityId(numberMachineUtils.getTableID(NumberMachineConstants.CITY_TABLE_ID_SEQ))
                 .build();
         BeanUtil.copyProperties(addCityParam, cityDO, CopyOptions.create().ignoreNullValue());
+        try {
+            cityDO.setCityChar(PinyinUtils.toPinYinUppercase(addCityParam.getCityName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR,  "全称转换拼音失败!");
+        }
         cityService.addCity(cityDO);
         cityRedisUtils.updateCity(cityDO.getCityId());
         return returnSuccess("保存城市成功！");
@@ -136,6 +142,11 @@ public class CityAction extends BaseAction {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到城市信息!");
         }
         BeanUtil.copyProperties(updateCityParam, cityDO, CopyOptions.create().ignoreNullValue());
+        try {
+            cityDO.setCityChar(PinyinUtils.toPinYinUppercase(updateCityParam.getCityName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR,  "全称转换拼音失败!");
+        }
         cityService.updateCity(cityDO);
         cityRedisUtils.updateCity(cityDO.getCityId());
         return returnSuccess("修改城市成功!");
@@ -201,6 +212,9 @@ public class CityAction extends BaseAction {
         }
         if (cityService.checkNameIfExist(addCityParam.getCityName(), null)) {
             return "城市名称已存在!";
+        }
+        if (addCityParam.getCertificateNo() == null) {
+            return "请输入城市身份证编号";
         }
         return null;
     }

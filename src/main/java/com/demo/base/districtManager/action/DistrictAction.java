@@ -15,6 +15,7 @@ import com.demo.base.districtManager.service.DistrictService;
 import com.demo.cache.country.CountryRedisUtils;
 import com.demo.cache.district.DistrictRedisUtils;
 import com.demo.contants.NumberMachineConstants;
+import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,11 +32,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("districtAction")
 public class DistrictAction extends BaseAction {
-    
+
     @Autowired
     private DistrictService districtService;
     @Autowired
     private DistrictRedisUtils districtRedisUtils;
+
     /*
      * 查询地区列表
      * @author kj
@@ -79,15 +81,20 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("addDistrict")
     @CommonBusiness(logRemark = "创建地区")
-    public Object addDistrict(@RequestBody(required = false) AddDistrictParam addDistrictParam){
+    public Object addDistrict(@RequestBody(required = false) AddDistrictParam addDistrictParam) {
         String checkError = checkAddDistrict(addDistrictParam);
         if (StringUtils.isNotBlank(checkError)) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, checkError);
         }
-        DistrictDO districtDO=DistrictDO.builder()
+        DistrictDO districtDO = DistrictDO.builder()
                 .districtId(numberMachineUtils.getTableID(NumberMachineConstants.DISTRICT_TABLE_ID_SEQ))
                 .build();
         BeanUtil.copyProperties(addDistrictParam, districtDO, CopyOptions.create().ignoreNullValue());
+        try {
+            districtDO.setDistrictChar(PinyinUtils.toPinYinUppercase(addDistrictParam.getDistrictName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "全称转换拼音失败!");
+        }
         districtService.addDistrict(districtDO);
         districtRedisUtils.updateDistrict(districtDO.getDistrictId());
         return returnSuccess("保存地区成功！");
@@ -131,6 +138,11 @@ public class DistrictAction extends BaseAction {
             return returnFail(ResultCode.BIS_DATA_NO_EXIST, "未查询到地区信息!");
         }
         BeanUtil.copyProperties(updateDistrictParam, districtDO, CopyOptions.create().ignoreNullValue());
+        try {
+            districtDO.setDistrictChar(PinyinUtils.toPinYinUppercase(updateDistrictParam.getDistrictName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "全称转换拼音失败!");
+        }
         districtService.updateDistrict(districtDO);
         districtRedisUtils.updateDistrict(districtDO.getDistrictId());
         return returnSuccess("修改地区成功!");
@@ -196,6 +208,9 @@ public class DistrictAction extends BaseAction {
         }
         if (districtService.checkNameIfExist(addDistrictParam.getDistrictName(), null)) {
             return "地区名称已存在!";
+        }
+        if (addDistrictParam.getCertificateNo() == null) {
+            return "请输入地区身份证编号";
         }
         return null;
     }

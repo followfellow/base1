@@ -1,5 +1,6 @@
 package com.demo.base.provinceManager.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
 import com.demo.action.vo.QueryPage;
 import com.demo.base.provinceManager.dao.ProvinceDao;
@@ -86,6 +87,11 @@ public class ProvinceServiceImpl extends BaseServiceImpl implements ProvinceServ
     public void deleteProvince(Long ProvinceId) {
         String sql = "delete from pub_province_t  where ProvinceId = " + ProvinceId + " limit 1";
         provinceDao.executeSql(sql);
+    }
+
+    @Override
+    public boolean checkNameIfExist(String provinceName, Long provinceId) {
+        return CollectionUtil.isNotEmpty(provinceDao.findProvinceByName(provinceName, provinceId));
     }
 
 }

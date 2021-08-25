@@ -4,6 +4,7 @@ import com.demo.action.vo.QueryPage;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.request.FindProvinceParam;
 import com.demo.dbutils.BaseDAOHibernateImpl;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,6 +34,16 @@ public class ProvinceDaoImpl extends BaseDAOHibernateImpl implements ProvinceDao
         }
         sql += " order by updatedDate desc ";
         return findObjectBySql(sql, ProvinceDTO.class, queryPage);
+    }
+
+    @Override
+    public List<ProvinceDTO> findProvinceByName(String provinceName, Long provinceId) {
+        String sql = " select  provinceId from  pub_province_t  where provinceName = '" + StringEscapeUtils.escapeSql(provinceName) + "' ";
+        if (provinceId != null) {
+            sql += " and provinceId <> " + provinceId;
+        }
+        sql += " limit 1  ";
+        return findObjectBySql(sql, ProvinceDTO.class);
     }
 
 }

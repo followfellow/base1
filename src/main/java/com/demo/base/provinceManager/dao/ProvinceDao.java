@@ -24,4 +24,12 @@ public interface ProvinceDao extends BaseDAO {
      */
     List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam, QueryPage queryPage);
 
+    /*
+     *
+     * @author kj
+     * @date 2021/8/24 11:34
+     * @param [provinceName, provinceId]
+     * @return java.util.List<com.demo.base.provinceManager.dto.ProvinceDTO>
+     */
+    List<ProvinceDTO> findProvinceByName(String provinceName, Long provinceId);
 }

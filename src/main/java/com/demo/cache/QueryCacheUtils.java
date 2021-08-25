@@ -1,14 +1,19 @@
 package com.demo.cache;
 
+import com.demo.base.cityManager.cache.CityCacheDTO;
 import com.demo.base.cityManager.dto.CityDTO;
+import com.demo.base.countryManager.cache.CountryCacheDTO;
 import com.demo.base.countryManager.dto.CountryDTO;
+import com.demo.base.districtManager.cache.DistrictCacheDTO;
 import com.demo.base.districtManager.dto.DistrictDTO;
+import com.demo.base.provinceManager.cache.ProvinceCacheDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.contants.RedisConstants;
 import com.demo.redis.RedisUtils;
 import com.demo.system.codeManager.dto.CodeDTO;
 import com.demo.system.propertyManager.dto.PropertyDTO;
 import com.demo.utils.StringUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,13 +40,26 @@ public class QueryCacheUtils {
      * @param []
      * @return java.util.List<com.demo.base.countryManager.dto.CountryDTO>
      */
-    public List<CountryDTO> findCacheCountryList(){
-        List<Object> objectList=redisUtils.findAllByKey(RedisConstants.COUNTRY);
-        if (objectList!=null||!objectList.isEmpty()){
-            return (List<CountryDTO>) (List) objectList;
+    public List<CountryCacheDTO> findCacheCountryList() {
+        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.COUNTRY);
+        if (objectList != null || !objectList.isEmpty()) {
+            return (List<CountryCacheDTO>) (List) objectList;
         }
         return null;
     }
+
+    /*
+     *
+     * @author kj
+     * @date 2021/8/25 16:17
+     * @param [countryId]
+     * @return com.demo.base.countryManager.cache.CountryCacheDTO
+     */
+    public CountryCacheDTO findCountry(Long countryId) {
+        Object object = redisUtils.getRedisByKey(RedisConstants.COUNTRY, countryId.toString());
+        return (CountryCacheDTO) object;
+    }
+
     /*
      *
      * @author kj
@@ -49,13 +67,26 @@ public class QueryCacheUtils {
      * @param []
      * @return java.util.List<com.demo.base.provinceManager.dto.ProvinceDTO>
      */
-    public List<ProvinceDTO> findCacheProvinceList(){
-        List<Object> objectList=redisUtils.findAllByKey(RedisConstants.PROVINCE);
-        if (objectList!=null||!objectList.isEmpty()){
-            return (List<ProvinceDTO>) (List) objectList;
+    public List<ProvinceCacheDTO> findCacheProvinceList() {
+        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.PROVINCE);
+        if (objectList != null || !objectList.isEmpty()) {
+            return (List<ProvinceCacheDTO>) (List) objectList;
         }
         return null;
     }
+
+    /*
+     * 
+     * @author kj
+     * @date 2021/8/25 16:22  
+     * @param [provinceId]
+     * @return com.demo.base.provinceManager.cache.ProvinceCacheDTO
+     */
+    public ProvinceCacheDTO findProvince(Long provinceId) {
+        Object object = redisUtils.getRedisByKey(RedisConstants.PROVINCE, provinceId.toString());
+        return (ProvinceCacheDTO) object;
+    }
+
     /*
      *
      * @author kj
@@ -63,13 +94,60 @@ public class QueryCacheUtils {
      * @param []
      * @return java.util.List<com.demo.base.cityManager.dto.CityDTO>
      */
-    public List<CityDTO> findCacheCityList(){
-        List<Object> objectList=redisUtils.findAllByKey(RedisConstants.CITY);
-        if (objectList!=null||!objectList.isEmpty()){
-            return (List<CityDTO>) (List) objectList;
+    public List<CityCacheDTO> findCacheCityList() {
+        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.CITY);
+        if (objectList != null || !objectList.isEmpty()) {
+            return (List<CityCacheDTO>) (List) objectList;
         }
         return null;
     }
+
+    /*
+     *
+     * @author kj
+     * @date 2021/8/25 11:53
+     * @param [cityId]
+     * @return java.lang.String
+     */
+    public String findCacheCityListById(Long cityId) {
+        if (cityId == null) {
+            return null;
+        }
+        Object object = redisUtils.getRedisByKey(RedisConstants.CITY, cityId.toString());
+        CityCacheDTO cityCacheDTO = (CityCacheDTO) object;
+        return cityCacheDTO.getCityName();
+    }
+
+    /*
+     *
+     * @author kj
+     * @date 2021/8/25 11:53
+     * @param [cityId]
+     * @return com.demo.base.cityManager.cache.CityCacheDTO
+     */
+    public CityCacheDTO findCity(Long cityId) {
+        Object object = redisUtils.getRedisByKey(RedisConstants.CITY, cityId.toString());
+        return (CityCacheDTO) object;
+    }
+
+    /*
+     *
+     * @author kj
+     * @date 2021/8/25 16:03
+     * @param [provinceId]
+     * @return java.util.List<java.lang.String>
+     */
+    public List<String> findCityListByProvinceId(Long provinceId) {
+        List<String> list = Lists.newArrayList();
+        List<CityCacheDTO> cacheCityList = findCacheCityList();
+        for (CityCacheDTO cityCacheDTO : cacheCityList) {
+            if (cityCacheDTO.getProvinceId().equals(provinceId)) {
+                list.add(cityCacheDTO.getCityName());
+            }
+        }
+        return list;
+    }
+
     /*
      *
      * @author kj
@@ -77,142 +155,42 @@ public class QueryCacheUtils {
      * @param []
      * @return java.util.List<com.demo.base.districtManager.dto.DistrictDTO>
      */
-    public List<DistrictDTO> findCacheDistrictList(){
-        List<Object> objectList=redisUtils.findAllByKey(RedisConstants.DISTRICT);
-        if (objectList!=null||!objectList.isEmpty()){
-            return (List<DistrictDTO>) (List) objectList;
-        }
-        return null;
-    }
-
-
-
-    /**
-     * 从缓存中获取系统参数集合
-     *
-     * @author:zc
-     * @date 2019/12/13 9:57
-     */
-    public List<PropertyDTO> findCachePropertyList() {
-        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.PROPERTY);
+    public List<DistrictCacheDTO> findCacheDistrictList() {
+        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.DISTRICT);
         if (objectList != null || !objectList.isEmpty()) {
-            return (List<PropertyDTO>) (List) objectList;
+            return (List<DistrictCacheDTO>) (List) objectList;
         }
         return null;
     }
 
-    /**
-     * 根据参数键从缓存中获取系统参数信息
-     *
-     * @param: propKey
-     * @author:zc
-     * @date 2019/12/13 9:50
+    /*
+     * 
+     * @author kj
+     * @date 2021/8/25 16:23  
+     * @param [districtId]
+     * @return com.demo.base.districtManager.cache.DistrictCacheDTO
      */
-    public PropertyDTO queryCachePropertyByPropKey(String propKey) {
-        if (StringUtils.isEmpty(propKey)) {
-            return null;
-        }
-        Object object = redisUtils.getRedisByKey(RedisConstants.PROPERTY, propKey);
-        if (object != null) {
-            return (PropertyDTO) object;
-        }
-        return null;
+    public DistrictCacheDTO findDistrict(Long districtId) {
+        Object object = redisUtils.getRedisByKey(RedisConstants.DISTRICT, districtId.toString());
+        return (DistrictCacheDTO) object;
     }
 
-    /**
-     * 根据参数键从缓存中获取参数值
-     *
-     * @param: propKey
-     * @author:zc
-     * @date 2019/12/13 9:55
+    /*
+     * 
+     * @author kj
+     * @date 2021/8/25 16:30  
+     * @param [cityId]
+     * @return java.util.List<java.lang.String>
      */
-    public String queryCachePropertyValueByPropKey(String propKey) {
-        if (StringUtils.isEmpty(propKey)) {
-            return null;
-        }
-        PropertyDTO property = queryCachePropertyByPropKey(propKey);
-        if (property != null) {
-            return property.getPropValue();
-        }
-        return null;
-    }
-
-    /**
-     * 从缓存中获取所有Code信息集合
-     *
-     * @author:zc
-     * @date 2019/12/13 10:19
-     */
-    public List<List<CodeDTO>> findCacheCodeList() {
-        List<Object> objectList = redisUtils.findAllByKey(RedisConstants.CODE);
-        if (objectList != null && !objectList.isEmpty()) {
-            return (List<List<CodeDTO>>) (List) objectList;
-        }
-        return null;
-    }
-
-    /**
-     * 根据code名称从缓存中获取code信息
-     *
-     * @param: codeName
-     * @author:zc
-     * @date 2019/12/13 10:24
-     */
-    public List<CodeDTO> queryCacheCodeByCodeName(String codeName) {
-        if (StringUtils.isEmpty(codeName)) {
-            return null;
-        }
-        Object object = redisUtils.getRedisByKey(RedisConstants.CODE, codeName);
-        if (object != null) {
-            return (List<CodeDTO>) (List) object;
-        }
-        return null;
-    }
-
-    /**
-     * 根据codekey从缓存中获取code值
-     *
-     * @param: codeKey
-     * @author:zc
-     * @date 2019/12/13 10:24
-     */
-    public String queryCacheCodeValueByCodeKey(String codeName, String codeKey) {
-        if (StringUtils.isEmpty(codeName) || StringUtils.isEmpty(codeKey)) {
-            return null;
-        }
-        Object object = redisUtils.getRedisByKey(RedisConstants.CODE, codeName);
-        if (object != null) {
-            List<CodeDTO> list = (List) object;
-            for (CodeDTO codeDTO : list) {
-                if (codeKey.equals(codeDTO.getCodeKey())) {
-                    return codeDTO.getCodeValue();
-                }
+    public List<String> findDistrictListByCityId(Long cityId) {
+        List<String> list = Lists.newArrayList();
+        List<DistrictCacheDTO> cacheDistrictList = findCacheDistrictList();
+        for (DistrictCacheDTO districtCacheDTO : cacheDistrictList) {
+            if (districtCacheDTO.getCityId().equals(cityId)) {
+                list.add(districtCacheDTO.getDistrictName());
             }
         }
-        return null;
-    }
-
-    /**
-     * 根据codekey从缓存中获取code信息
-     *
-     * @param: codeKey
-     * @author:zc
-     * @date 2019/12/13 10:24
-     */
-    public CodeDTO queryCacheCodeByCodeKey(String codeName, String codeKey) {
-        if (StringUtils.isEmpty(codeKey) || StringUtils.isEmpty(codeKey)) {
-            return null;
-        }
-        Object object = redisUtils.getRedisByKey(RedisConstants.CODE, codeName);
-        if (object != null) {
-            List<CodeDTO> list = (List) object;
-            for (CodeDTO codeDTO : list) {
-                if (codeKey.equals(codeDTO.getCodeKey())) {
-                    return codeDTO;
-                }
-            }
-        }
-        return null;
+        return list;
     }
 
 }

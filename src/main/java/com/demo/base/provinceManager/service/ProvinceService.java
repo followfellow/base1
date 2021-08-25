@@ -63,4 +63,13 @@ public interface ProvinceService {
      */
     void deleteProvince(Long ProvinceId);
 
+    /*
+     *
+     * @author kj
+     * @date 2021/8/24 11:19
+     * @param [provinceName, provinceId]
+     * @return boolean
+     */
+    boolean checkNameIfExist(String provinceName, Long provinceId);
+
 }

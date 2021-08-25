@@ -15,6 +15,7 @@ import com.demo.base.countryManager.service.CountryService;
 import com.demo.cache.country.CountryRedisUtils;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
+import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,6 +96,12 @@ public class CountryAction extends BaseAction {
                 .countryId(numberMachineUtils.getTableID(NumberMachineConstants.COUNTRY_TABLE_ID_SEQ))
                 .build();
         BeanUtil.copyProperties(addCountryParam, countryDO, CopyOptions.create().ignoreNullValue());
+        try {
+            countryDO.setCountryChar(PinyinUtils.toPinYinLowercase(addCountryParam.getCountryName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR,  "全称转换拼音失败!");
+//            countryDO.setCountryChar(addCountryParam.getCountryChar());
+        }
         countryService.addCountry(countryDO);
         countryRedisUtils.updateCountry(countryDO.getCountryId());
         return returnSuccess("保存国家成功！");
@@ -141,6 +148,14 @@ public class CountryAction extends BaseAction {
         }
 
         BeanUtil.copyProperties(updateCountryParam, countryDO, CopyOptions.create().ignoreNullValue());
+
+        try {
+            countryDO.setCountryChar(PinyinUtils.toPinYinLowercase(updateCountryParam.getCountryName()));
+        } catch (Exception e) {
+            return returnFail(ResultCode.AUTH_PARAM_ERROR,  "全称转换拼音失败!");
+//            countryDO.setCountryChar(updateCountryParam.getCountryChar());
+        }
+
         countryService.updateCountry(countryDO);
         countryRedisUtils.updateCountry(countryDO.getCountryId());
         return returnSuccess("修改国家成功!");
@@ -208,6 +223,12 @@ public class CountryAction extends BaseAction {
         }
         if (countryService.checkNameIfExist(addCountryParam.getCountryName(), null)) {
             return "国家名称已存在!";
+        }
+        if(StringUtils.isEmpty(addCountryParam.getThreeBitCode())){
+            return "请输入国家三位代码";
+        }
+        if(StringUtils.isEmpty(addCountryParam.getTwoBitCode())){
+            return "请输入国家两位代码";
         }
         return null;
     }
