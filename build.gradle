@@ -57,7 +57,7 @@ dependencies {
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version:'5.2'
     implementation  'com.demo.common:common-util:3.3.3-Release'
     implementation  'com.demo.dbutils:db-util:3.1.4-Release'
-    implementation  'com.demo.numberMachineUtils:numberMachine-util:3.0.4-Release'
+    implementation  'com.demo.numberMachineUtils:numberMachine-util:3.0.5-Release'
 
     implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2021.1'
     // https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-starter-alibaba-sentinel
