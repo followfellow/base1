@@ -1,10 +1,10 @@
 package com.demo.base.userManager.service;
 
 import com.demo.action.vo.QueryPage;
-import com.demo.base.userManager.po.RoleJoinUserDO;
-import com.demo.base.userManager.po.UserDO;
 import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.userManager.dto.UserDTO;
+import com.demo.base.userManager.po.RoleJoinUserDO;
+import com.demo.base.userManager.po.UserDO;
 import com.demo.base.userManager.request.*;
 
 import java.util.List;
@@ -144,4 +144,12 @@ public interface UserService {
      */
     List<RoleDTO> findRoleByUserIds(List<Long> userIdList);
 
+    /**
+     * 通过名称查询用户信息
+     *
+     * @param userName
+     * @author wxc
+     * @date 2021/8/31 9:08
+     */
+    UserDTO findUserByName(String userName);
 }

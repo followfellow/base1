@@ -1,6 +1,8 @@
 package com.demo.base.userManager.dao;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.demo.action.result.ResultCode;
 import com.demo.action.vo.QueryPage;
 import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.userManager.dto.UserDTO;
@@ -8,6 +10,8 @@ import com.demo.base.userManager.request.FindRoleUserParam;
 import com.demo.base.userManager.request.FindUserParam;
 import com.demo.contants.CodeConstants;
 import com.demo.dbutils.BaseDAOHibernateImpl;
+import com.demo.exception.BaseException;
+import com.demo.utils.JsonUtils;
 import com.demo.utils.StringUtils;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;
@@ -115,6 +119,7 @@ public class UserDaoImpl extends BaseDAOHibernateImpl implements UserDao {
         return findObjectBySql(sql, UserDTO.class, queryPage);
     }
 
+
     /**
      * 通过用户id集合获取角色信息
      *
@@ -130,5 +135,22 @@ public class UserDaoImpl extends BaseDAOHibernateImpl implements UserDao {
                 "left join sys_role_t t2 on t1.roleId = t2.roleId " +
                 "where t1.userId  in (" + userIds.substring(0, userIds.length() - 1) + ")";
         return findObjectBySql(sql, RoleDTO.class);
+    }
+
+    /**
+     * @param userName
+     * @author wxc
+     * @date 2021/8/31 9:09
+     */
+    @Override
+    public UserDTO findUserByName(String userName) {
+        String sql = " select userId,userName,userRealName,businessId" +
+                " from sys_user_t  " +
+                " where userName = '" + userName + "' limit 1";
+        List<UserDTO> list = findObjectBySql(sql, UserDTO.class);
+        if (CollectionUtil.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
     }
 }

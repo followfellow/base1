@@ -215,4 +215,16 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     public List<UserDTO> findNoRoleUser(FindRoleUserParam findRoleUserParam, QueryPage queryPage) {
         return userDao.findNoRoleUser(findRoleUserParam, queryPage);
     }
+
+    /**
+     * 通过名称查询用户信息
+     *
+     * @param userName
+     * @author wxc
+     * @date 2021/8/31 9:08
+     */
+    @Override
+    public UserDTO findUserByName(String userName) {
+        return userDao.findUserByName(userName);
+    }
 }
