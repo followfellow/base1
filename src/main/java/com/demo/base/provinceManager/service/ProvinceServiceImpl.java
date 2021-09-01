@@ -2,10 +2,11 @@ package com.demo.base.provinceManager.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
-import com.demo.action.vo.QueryPage;
 import com.demo.base.provinceManager.dao.ProvinceDao;
+import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
+import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
 import org.springframework.stereotype.Service;
 
@@ -53,13 +54,12 @@ public class ProvinceServiceImpl extends BaseServiceImpl implements ProvinceServ
      * 查询省份列表
      *
      * @param findProvinceParam
-     * @param queryPage
      * @author kj
      * @date 2021-08-20 16:54
      */
     @Override
-    public List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam, QueryPage queryPage) {
-        return provinceDao.findProvinceList(findProvinceParam, queryPage);
+    public List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam) {
+        return provinceDao.findProvinceList(findProvinceParam);
     }
 
     /**
@@ -94,4 +94,9 @@ public class ProvinceServiceImpl extends BaseServiceImpl implements ProvinceServ
         return CollectionUtil.isNotEmpty(provinceDao.findProvinceByName(provinceName, provinceId));
     }
 
+
+    @Override
+    public List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam) {
+        return provinceDao.findAreaList(findAreaTreeParam);
+    }
 }

@@ -1,6 +1,5 @@
 package com.demo.base.cityManager.service;
 
-import com.demo.action.vo.QueryPage;
 import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.base.cityManager.po.CityDO;
 import com.demo.base.cityManager.request.FindCityParam;
@@ -21,7 +20,7 @@ public interface CityService {
      * @param [findCityParam]
      * @return java.util.List<com.demo.base.cityManager.dto.CityDTO>
      */
-    List<CityDTO> findCityList(FindCityParam findCityParam, QueryPage queryPage);
+    List<CityDTO> findCityList(FindCityParam findCityParam);
 
     /*
      * 添加城市

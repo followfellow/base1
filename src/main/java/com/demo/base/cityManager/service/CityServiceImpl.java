@@ -2,7 +2,6 @@ package com.demo.base.cityManager.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
-import com.demo.action.vo.QueryPage;
 import com.demo.base.cityManager.dao.CityDao;
 import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.base.cityManager.po.CityDO;
@@ -34,8 +33,8 @@ public class CityServiceImpl extends BaseServiceImpl implements CityService {
      * @return java.util.List<com.demo.base.cityManager.dto.CityDTO>
      */
     @Override
-    public List<CityDTO> findCityList(FindCityParam findCityParam, QueryPage queryPage) {
-        return cityDao.findCityList(findCityParam,queryPage);
+    public List<CityDTO> findCityList(FindCityParam findCityParam) {
+        return cityDao.findCityList(findCityParam);
     }
 
     /*

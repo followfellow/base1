@@ -3,17 +3,22 @@ package com.demo.base.provinceManager.action;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
-import com.demo.action.vo.QueryPage;
 import com.demo.aop.CommonBusiness;
+import com.demo.base.cityManager.cache.CityCacheDTO;
+import com.demo.base.cityManager.service.CityService;
+import com.demo.base.districtManager.cache.DistrictCacheDTO;
+import com.demo.base.districtManager.service.DistrictService;
+import com.demo.base.provinceManager.cache.ProvinceCacheDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
 import com.demo.base.provinceManager.request.*;
 import com.demo.base.provinceManager.response.FindProvinceResult;
 import com.demo.base.provinceManager.response.QueryProvinceResult;
 import com.demo.base.provinceManager.service.ProvinceService;
-import com.demo.cache.district.DistrictRedisUtils;
+import com.demo.cache.QueryCacheUtils;
 import com.demo.cache.province.ProvinceRedisUtils;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
@@ -22,7 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -40,7 +47,14 @@ public class ProvinceAction extends BaseAction {
     @Autowired
     private ProvinceService provinceService;
     @Autowired
+    private CityService cityService;
+    @Autowired
+    private DistrictService districtService;
+    @Autowired
     private ProvinceRedisUtils provinceRedisUtils;
+    @Autowired
+    QueryCacheUtils queryCacheUtils;
+
 
     /**
      * 查询省份列表
@@ -55,10 +69,16 @@ public class ProvinceAction extends BaseAction {
         if (findProvinceParam == null) {
             findProvinceParam = FindProvinceParam.builder().build();
         }
-        QueryPage queryPage = initQueryPage(findProvinceParam);
-        List<ProvinceDTO> provinceDTOList = provinceService.findProvinceList(findProvinceParam, queryPage);
+        List<ProvinceDTO> provinceDTOList = provinceService.findProvinceList(findProvinceParam);
         List<FindProvinceResult> findProvinceResultList = processProvinceInfo(provinceDTOList);
-        return returnSuccessListByPage(findProvinceResultList, queryPage, "查询省份列表成功!");
+
+        int size = findProvinceResultList.size();
+        FindProvinceResult findProvinceResult = FindProvinceResult.builder()
+                .findProvinceResultList(findProvinceResultList)
+                .provinceSize(size)
+                .build();
+
+        return returnSuccess("查询省份列表成功!", findProvinceResult);
     }
 
     /**
@@ -225,6 +245,110 @@ public class ProvinceAction extends BaseAction {
         provinceService.deleteProvince(deleteProvinceParam.getProvinceId());
         provinceRedisUtils.deleteProvince(deleteProvinceParam.getProvinceId().toString());
         return returnSuccess("删除省份成功!");
+    }
+
+    @RequestMapping("findProvinceCityDistrictListFormCache")
+    @CommonBusiness(logRemark = "查询所有")
+    public Object findProvinceCityDistrictListFormCache(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
+
+        List<ProvinceCacheDTO> provinceCacheDTOList = queryCacheUtils.findCacheProvinceList();
+        List<CityCacheDTO> cityCacheDTOList = queryCacheUtils.findCacheCityList();
+        List<DistrictCacheDTO> districtCacheDTOList = queryCacheUtils.findCacheDistrictList();
+
+        Map<Long, List<DistrictCacheDTO>> listMap1 = districtCacheDTOList.stream()
+                .sorted(Comparator.comparing(DistrictCacheDTO::getDistrictId))
+                .collect(Collectors.groupingBy(DistrictCacheDTO::getCityId));
+
+        for (CityCacheDTO cityCacheDTO : cityCacheDTOList) {
+            cityCacheDTO.setDistricts(listMap1.get(cityCacheDTO.getCityId()));
+            if (CollectionUtil.isNotEmpty(cityCacheDTO.getDistricts())) {
+                cityCacheDTO.setDistrictSize(cityCacheDTO.getDistricts().size());
+            }
+        }
+
+        Map<Long, List<CityCacheDTO>> collect1 = cityCacheDTOList.stream()
+                .sorted(Comparator.comparing(CityCacheDTO::getCityId))
+                .collect(Collectors.groupingBy(CityCacheDTO::getProvinceId));
+
+        for (ProvinceCacheDTO provinceCacheDTO : provinceCacheDTOList) {
+            provinceCacheDTO.setCities(collect1.get(provinceCacheDTO.getProvinceId()));
+            if (CollectionUtil.isNotEmpty(provinceCacheDTO.getCities())) {
+                provinceCacheDTO.setCitySize(provinceCacheDTO.getCities().size());
+            }
+        }
+
+        return provinceCacheDTOList.stream()
+                .sorted(Comparator.comparing(ProvinceCacheDTO::getProvinceId))
+                .collect(Collectors.toList());
+    }
+
+
+    @RequestMapping("findArea")
+    @CommonBusiness(logRemark = "根据条件查询")
+    public Object findArea(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
+        if (findAreaTreeParam == null) {
+            return returnSuccess("查询成功!", findProvinceCityDistrictListFormCache(null));
+        }
+        if (findAreaTreeParam.getDistrictId() != null) {
+            findAreaTreeParam.setCityId(queryCacheUtils.findCityIdByDistrictId(findAreaTreeParam.getDistrictId()));
+            findAreaTreeParam.setProvinceId(queryCacheUtils.findProvinceIdByCityId(findAreaTreeParam.getCityId()));
+
+            List<DistrictCacheDTO> districtCacheDTOList = queryCacheUtils.findDistrictByCityId(findAreaTreeParam.getCityId())
+                    .stream()
+                    .filter(districtCacheDTO -> findAreaTreeParam.getDistrictId().equals(districtCacheDTO.getDistrictId()))
+                    .collect(Collectors.toList());
+
+            List<CityCacheDTO> cityCacheDTOList = queryCacheUtils.findCacheCityList()
+                    .stream()
+                    .filter(cityCacheDTO -> findAreaTreeParam.getCityId().equals(cityCacheDTO.getCityId()))
+                    .collect(Collectors.toList());
+            return returnSuccess("查询成功!", citySetDistrict(findAreaTreeParam, districtCacheDTOList, cityCacheDTOList));
+
+        } else if (findAreaTreeParam.getCityId() != null) {
+            findAreaTreeParam.setProvinceId(queryCacheUtils.findProvinceIdByCityId(findAreaTreeParam.getCityId()));
+
+            List<DistrictCacheDTO> districtCacheDTOList = queryCacheUtils.findDistrictByCityId(findAreaTreeParam.getCityId());
+
+            List<CityCacheDTO> cityCacheDTOList = queryCacheUtils.findCitiesByProvinceId(findAreaTreeParam.getProvinceId())
+                    .stream()
+                    .filter(cityCacheDTO -> findAreaTreeParam.getCityId().equals(cityCacheDTO.getCityId()))
+                    .collect(Collectors.toList());
+            return returnSuccess("查询成功!", citySetDistrict(findAreaTreeParam, districtCacheDTOList, cityCacheDTOList));
+
+        } else if (findAreaTreeParam.getProvinceId() != null) {
+
+            List<DistrictCacheDTO> districtCacheDTOList = queryCacheUtils.findCacheDistrictList();
+            Map<Long, List<DistrictCacheDTO>> listMap1 = districtCacheDTOList.stream()
+                    .sorted(Comparator.comparing(DistrictCacheDTO::getDistrictId))
+                    .collect(Collectors.groupingBy(DistrictCacheDTO::getCityId));
+
+            List<CityCacheDTO> cityCacheDTOList = queryCacheUtils.findCitiesByProvinceId(findAreaTreeParam.getProvinceId());
+            for (CityCacheDTO cityCacheDTO : cityCacheDTOList) {
+                cityCacheDTO.setDistricts(listMap1.get(cityCacheDTO.getCityId()));
+            }
+            return returnSuccess("查询成功!", filterProvince(findAreaTreeParam, cityCacheDTOList));
+        }
+        return null;
+    }
+
+    private Object filterProvince(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam, List<CityCacheDTO> cityCacheDTOList) {
+        List<ProvinceCacheDTO> provinceCacheDTOList = queryCacheUtils.findCacheProvinceList()
+                .stream()
+                .filter(provinceCacheDTO -> findAreaTreeParam.getProvinceId().equals(provinceCacheDTO.getProvinceId()))
+                .collect(Collectors.toList());
+        for (ProvinceCacheDTO provinceCacheDTO : provinceCacheDTOList) {
+            provinceCacheDTO.setCities(cityCacheDTOList);
+        }
+        return provinceCacheDTOList.stream()
+                .sorted(Comparator.comparing(ProvinceCacheDTO::getProvinceId))
+                .collect(Collectors.toList());
+    }
+
+    private Object citySetDistrict(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam, List<DistrictCacheDTO> districtCacheDTOList, List<CityCacheDTO> cityCacheDTOList) {
+        for (CityCacheDTO cityCacheDTO : cityCacheDTOList) {
+            cityCacheDTO.setDistricts(districtCacheDTOList);
+        }
+        return filterProvince(findAreaTreeParam, cityCacheDTOList);
     }
 
 }

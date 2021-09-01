@@ -13,12 +13,10 @@ import com.demo.base.countryManager.response.FindCountryResult;
 import com.demo.base.countryManager.response.QueryCountryResult;
 import com.demo.base.countryManager.service.CountryService;
 import com.demo.cache.country.CountryRedisUtils;
-import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +57,8 @@ public class CountryAction extends BaseAction {
         QueryPage queryPage = initQueryPage(findCountryParam);
         List<CountryDTO> countryDTOList = countryService.findCountryList(findCountryParam, queryPage);
         List<FindCountryResult> findCountryResultList = processCountryInfo(countryDTOList);
-        return returnSuccessListByPage(findCountryResultList, queryPage, "查询国家列表成功!");
+//        return returnSuccessListByPage(findCountryResultList, queryPage, "查询国家列表成功!");
+        return returnSuccess("查询国家列表成功!",findCountryResultList);
     }
 
     /**

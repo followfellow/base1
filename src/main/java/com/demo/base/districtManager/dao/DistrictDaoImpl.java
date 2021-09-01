@@ -1,6 +1,5 @@
 package com.demo.base.districtManager.dao;
 
-import com.demo.action.vo.QueryPage;
 import com.demo.base.districtManager.dto.DistrictDTO;
 import com.demo.base.districtManager.request.FindDistrictParam;
 import com.demo.contants.Constants;
@@ -18,15 +17,16 @@ import java.util.List;
 @Repository(Constants.MYSQL + "DistrictDao")
 public class DistrictDaoImpl extends BaseDAOHibernateImpl implements DistrictDao {
     @Override
-    public List<DistrictDTO> findDistrictList(FindDistrictParam findDistrictParam, QueryPage queryPage) {
+    public List<DistrictDTO> findDistrictList(FindDistrictParam findDistrictParam) {
         String sql = "select districtId,districtName,districtChar,cityId,certificateNo from pub_district_t where 1 = 1";
         if (findDistrictParam != null) {
-            if (!StringUtils.isEmpty(findDistrictParam.getDistrictId())) {
-                sql += " and districtId = '" + findDistrictParam.getDistrictId() + "' ";
+            if (!StringUtils.isEmpty(findDistrictParam.getCityId())) {
+                sql += " and cityId = '" + findDistrictParam.getCityId() + "' ";
             }
         }
 //        sql += " and businessId = " + findCountryParam.getBusinessId();
-        return findObjectBySql(sql, DistrictDTO.class,queryPage);
+        return findObjectBySql(sql, DistrictDTO.class);
+//        return findObjectBySql(sql, DistrictDTO.class,queryPage);
     }
 
     @Override

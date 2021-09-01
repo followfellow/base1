@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
-import com.demo.action.vo.QueryPage;
 import com.demo.aop.CommonBusiness;
 import com.demo.base.districtManager.dto.DistrictDTO;
 import com.demo.base.districtManager.po.DistrictDO;
@@ -12,7 +11,6 @@ import com.demo.base.districtManager.request.*;
 import com.demo.base.districtManager.response.FindDistrictResult;
 import com.demo.base.districtManager.response.QueryDistrictResult;
 import com.demo.base.districtManager.service.DistrictService;
-import com.demo.cache.country.CountryRedisUtils;
 import com.demo.cache.district.DistrictRedisUtils;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
@@ -51,10 +49,16 @@ public class DistrictAction extends BaseAction {
         if (findDistrictParam == null) {
             findDistrictParam = FindDistrictParam.builder().build();
         }
-        QueryPage queryPage = initQueryPage(findDistrictParam);
-        List<DistrictDTO> districtDTOList = districtService.findDistrictList(findDistrictParam, queryPage);
+        List<DistrictDTO> districtDTOList = districtService.findDistrictList(findDistrictParam);
         List<FindDistrictResult> findDistrictResultList = processDistrictInfo(districtDTOList);
-        return returnSuccessListByPage(findDistrictResultList, queryPage, "查询地区列表成功!");
+
+        int size = findDistrictResultList.size();
+        FindDistrictResult findDistrictResult = FindDistrictResult.builder()
+                .findDistrictResultList(findDistrictResultList)
+                .districtSize(size)
+                .build();
+        return returnSuccess("查询地区列表成功!", findDistrictResult);
+//        return returnSuccessListByPage(findDistrictResultList, queryPage, "查询地区列表成功!");
     }
 
     /**

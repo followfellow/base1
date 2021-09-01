@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
-import com.demo.action.vo.QueryPage;
 import com.demo.aop.CommonBusiness;
 import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.base.cityManager.po.CityDO;
@@ -13,7 +12,6 @@ import com.demo.base.cityManager.response.FindCityResult;
 import com.demo.base.cityManager.response.QueryCityResult;
 import com.demo.base.cityManager.service.CityService;
 import com.demo.cache.city.CityRedisUtils;
-import com.demo.cache.country.CountryRedisUtils;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
@@ -55,10 +53,17 @@ public class CityAction extends BaseAction {
         if (findCityParam == null) {
             findCityParam = FindCityParam.builder().build();
         }
-        QueryPage queryPage = initQueryPage(findCityParam);
-        List<CityDTO> cityDTOList = cityService.findCityList(findCityParam, queryPage);
+        List<CityDTO> cityDTOList = cityService.findCityList(findCityParam);
         List<FindCityResult> findCityResultList = processCityInfo(cityDTOList);
-        return returnSuccessListByPage(findCityResultList, queryPage, "查询城市列表成功!");
+
+        int size = findCityResultList.size();
+        FindCityResult build = FindCityResult.builder()
+                .findCityResultList(findCityResultList)
+                .citySize(size)
+                .build();
+
+//        return returnSuccessListByPage(findCityResultList, queryPage, "查询城市列表成功!");
+        return returnSuccess("查询城市列表成功!",build );
     }
 
     /**

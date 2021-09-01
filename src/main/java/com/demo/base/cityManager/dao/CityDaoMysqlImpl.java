@@ -1,6 +1,5 @@
 package com.demo.base.cityManager.dao;
 
-import com.demo.action.vo.QueryPage;
 import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.base.cityManager.request.FindCityParam;
 import com.demo.contants.Constants;
@@ -27,15 +26,16 @@ public class CityDaoMysqlImpl extends BaseDAOHibernateImpl implements CityDao {
      * @return java.util.List<com.demo.base.cityManager.dto.CityDTO>
      */
     @Override
-    public List<CityDTO> findCityList(FindCityParam findCityParam, QueryPage queryPage) {
+    public List<CityDTO> findCityList(FindCityParam findCityParam) {
         String sql = "select cityId,cityName,cityChar,provinceId,certificateNo from pub_city_t where 1 = 1";
         if (findCityParam != null) {
-            if (!StringUtils.isEmpty(findCityParam.getCityId())) {
-                sql += " and cityId = '" + findCityParam.getCityId() + "' ";
+            if (!StringUtils.isEmpty(findCityParam.getProvinceId())) {
+                sql += " and provinceId = '" + findCityParam.getProvinceId() + "' ";
             }
         }
 //        sql += " and businessId = " + findCountryParam.getBusinessId();
-        return findObjectBySql(sql, CityDTO.class,queryPage);
+//        return findObjectBySql(sql, CityDTO.class,queryPage);
+        return findObjectBySql(sql, CityDTO.class);
     }
 
     /*

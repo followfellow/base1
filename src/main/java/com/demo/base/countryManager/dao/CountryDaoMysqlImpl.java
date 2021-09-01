@@ -36,7 +36,7 @@ public class CountryDaoMysqlImpl extends BaseDAOHibernateImpl implements Country
             }
         }
 //        sql += " and businessId = " + findCountryParam.getBusinessId();
-        return findObjectBySql(sql, CountryDTO.class, queryPage);
+        return findObjectBySql(sql, CountryDTO.class);
     }
 
     /*

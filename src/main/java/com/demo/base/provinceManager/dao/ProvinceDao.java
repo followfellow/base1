@@ -1,7 +1,8 @@
 package com.demo.base.provinceManager.dao;
 
-import com.demo.action.vo.QueryPage;
+import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
+import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
 import com.demo.dbutils.BaseDAO;
 
@@ -18,11 +19,10 @@ public interface ProvinceDao extends BaseDAO {
      * 查询省份列表
      *
      * @param findProvinceParam
-     * @param queryPage
      * @author kj
      * @date 2021-08-20 16:54
      */
-    List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam, QueryPage queryPage);
+    List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam);
 
     /*
      *
@@ -32,4 +32,7 @@ public interface ProvinceDao extends BaseDAO {
      * @return java.util.List<com.demo.base.provinceManager.dto.ProvinceDTO>
      */
     List<ProvinceDTO> findProvinceByName(String provinceName, Long provinceId);
+
+
+    List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam);
 }

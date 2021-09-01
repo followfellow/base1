@@ -2,7 +2,6 @@ package com.demo.cache.city;
 
 import com.demo.base.cityManager.cache.FindCityCacheParam;
 import com.demo.base.cityManager.dto.CityDTO;
-import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.dbutils.BaseDAOHibernateImpl;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;

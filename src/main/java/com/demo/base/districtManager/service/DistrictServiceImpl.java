@@ -2,7 +2,6 @@ package com.demo.base.districtManager.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
-import com.demo.action.vo.QueryPage;
 import com.demo.base.districtManager.dao.DistrictDao;
 import com.demo.base.districtManager.dto.DistrictDTO;
 import com.demo.base.districtManager.po.DistrictDO;
@@ -24,8 +23,8 @@ public class DistrictServiceImpl extends BaseServiceImpl implements DistrictServ
     private DistrictDao districtDao;
 
     @Override
-    public List<DistrictDTO> findDistrictList(FindDistrictParam findDistrictParam, QueryPage queryPage) {
-        return districtDao.findDistrictList(findDistrictParam,queryPage);
+    public List<DistrictDTO> findDistrictList(FindDistrictParam findDistrictParam) {
+        return districtDao.findDistrictList(findDistrictParam);
     }
 
     @Override

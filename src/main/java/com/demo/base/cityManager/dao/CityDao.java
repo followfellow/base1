@@ -1,6 +1,5 @@
 package com.demo.base.cityManager.dao;
 
-import com.demo.action.vo.QueryPage;
 import com.demo.base.cityManager.dto.CityDTO;
 import com.demo.base.cityManager.request.FindCityParam;
 import com.demo.dbutils.BaseDAO;
@@ -21,7 +20,7 @@ public interface CityDao extends BaseDAO {
      * @param [findCityParam]
      * @return java.util.List<com.demo.base.cityManager.dto.CityDTO>
      */
-    List<CityDTO> findCityList(FindCityParam findCityParam, QueryPage queryPage);
+    List<CityDTO> findCityList(FindCityParam findCityParam);
 
     /*
      * 通过城市名称查找城市

@@ -1,8 +1,9 @@
 package com.demo.base.provinceManager.service;
 
-import com.demo.action.vo.QueryPage;
+import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
+import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
 
 import java.util.List;
@@ -39,11 +40,10 @@ public interface ProvinceService {
      * 查询省份列表
      *
      * @param findProvinceParam
-     * @param queryPage
      * @author kj
      * @date 2021-08-20 16:54
      */
-    List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam, QueryPage queryPage);
+    List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam);
 
     /**
      * 更新省份
@@ -71,5 +71,7 @@ public interface ProvinceService {
      * @return boolean
      */
     boolean checkNameIfExist(String provinceName, Long provinceId);
+
+    List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam);
 
 }
