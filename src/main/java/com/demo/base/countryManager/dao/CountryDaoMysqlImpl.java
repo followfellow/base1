@@ -29,7 +29,7 @@ public class CountryDaoMysqlImpl extends BaseDAOHibernateImpl implements Country
      */
     @Override
     public List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage) {
-        String sql = "select countryId,countryName,countryChar,threeBitCode,twoBitCode from pub_country_t where 1 = 1";
+        String sql = "select countryId,countryName,countryChar,threeBitCode,twoBitCode,updatedDate,updatedUser from pub_country_t where 1 = 1";
         if (findCountryParam != null) {
             if (!StringUtils.isEmpty(findCountryParam.getCountryId())) {
                 sql += " and countryId = '" + findCountryParam.getCountryId() + "' ";
