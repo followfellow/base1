@@ -23,10 +23,13 @@ import com.demo.base.roleManager.po.RoleDO;
 import com.demo.base.userManager.po.RoleJoinUserDO;
 import com.demo.base.userManager.po.UserDO;
 import com.demo.base.userManager.service.UserService;
+import com.demo.cache.QueryCacheUtils;
 import com.demo.contants.CodeConstants;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
+import com.demo.contants.PropertyConstants;
 import com.demo.dbutils.BaseApplicationDO;
+import com.demo.system.propertyManager.dto.PropertyDTO;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import com.demo.utils.ValidatorUtils;
@@ -61,6 +64,8 @@ public class BusinessAction extends BaseAction {
     private UserService userService;
     @Autowired
     private JurisGroupService jurisGroupService;
+    @Autowired
+    private QueryCacheUtils queryCacheUtils;
 
     /**
      * 查询单位列表
@@ -181,7 +186,16 @@ public class BusinessAction extends BaseAction {
     @CommonBusiness(logRemark = "查询运营商")
    @PreAuthorize("hasAuthority('businessAction:findOperation')")
     public Object findOperation() {
-        return returnSuccess("查询运营商成功!", businessService.findOperation());
+        PropertyDTO propertyDTO = queryCacheUtils.queryCachePropertyByPropKey(PropertyConstants.FDFS_WEB_SERVER_URL);
+        if (propertyDTO == null || StringUtils.isEmpty(propertyDTO.getPropValue())) {
+            return returnFail(ResultCode.BIS_DATA_NO_EXIST, "请配置文件服务器地址!");
+        }
+        BusinessDTO operation = businessService.findOperation();
+        if (operation != null) {
+            operation.setAbMallLogo(propertyDTO.getPropValue() + operation.getMallLogo());
+            operation.setAbPlatformLogo(propertyDTO.getPropValue() + operation.getPlatformLogo());
+        }
+        return returnSuccess("查询运营商成功!", operation);
     }
 
     /**

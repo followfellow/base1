@@ -6,6 +6,8 @@ import com.demo.base.districtManager.cache.DistrictCacheDTO;
 import com.demo.base.provinceManager.cache.ProvinceCacheDTO;
 import com.demo.contants.RedisConstants;
 import com.demo.redis.RedisUtils;
+import com.demo.system.propertyManager.dto.PropertyDTO;
+import com.demo.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -142,6 +144,25 @@ public class QueryCacheUtils {
         DistrictCacheDTO districtCacheDTO = (DistrictCacheDTO) object;
         return districtCacheDTO.getCityId();
     }
+
+    /**
+     * 根据参数键从缓存中获取系统参数信息
+     *
+     * @param: propKey
+     * @author:zc
+     * @date 2019/12/13 9:50
+     */
+    public PropertyDTO queryCachePropertyByPropKey(String propKey) {
+        if (StringUtils.isEmpty(propKey)) {
+            return null;
+        }
+        Object object = redisUtils.getRedisByKey(RedisConstants.PROPERTY, propKey);
+        if (object != null) {
+            return (PropertyDTO) object;
+        }
+        return null;
+    }
+
 
 }
 

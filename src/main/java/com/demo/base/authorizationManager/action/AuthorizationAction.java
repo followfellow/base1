@@ -88,14 +88,18 @@ public class AuthorizationAction extends BaseAction {
                     if (jsonObject == null || StringUtils.isEmpty(jsonObject.getString("userName"))) {
                         return returnFail(ResultCode.AUTH_LOGIN_USER_TIME_OUT, "请重新登录系统!");
                     }
-                    redisUtils.set(tokenValue, curUser);
+                    jsonObject.put("userRealName", curUser.getUserRealName());
+                    jsonObject.put("businessId", curUser.getBusinessId());
+                    jsonObject.put("userId", curUser.getUserId());
+                    jsonObject.put("businessAllName", curUser.getBusinessAllName());
+                    redisUtils.set(tokenValue, jsonObject);
                 }
             }
         } catch (Exception e) {
             return returnFail(ResultCode.AUTH_LOGIN_USER_TIME_OUT, "请重新登录系统");
         }
         List<RoleDTO> roles = roleService.findRoleByUserId(curUser.getUserId());
-        HashMap<String, Object> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>(4);
         result.put("roles", roles);
         result.put("userInfo", new HashMap<String, Object>() {{
             put("businessAllName", curUser.getBusinessAllName());
@@ -126,12 +130,18 @@ public class AuthorizationAction extends BaseAction {
         }
         //设置当前登录角色缓存
         try {
-            UserDTO userDTO = getCurrentUser(UserDTO.class);
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null) {
                 String tokenValue = authHeader.replace("bearer", "").trim();
-                userDTO.setRoleId(findMenuByRoleParam.getRoleId());
-                redisUtils.set(tokenValue, userDTO);
+                Object object = redisUtils.get(tokenValue);
+                if (object != null) {
+                    JSONObject jsonObject = JsonUtils.getJSONObject(object.toString());
+                    if (jsonObject == null || StringUtils.isEmpty(jsonObject.getString("userName"))) {
+                        return returnFail(ResultCode.AUTH_LOGIN_USER_TIME_OUT, "请重新登录系统!");
+                    }
+                    jsonObject.put("roleId", roleDO.getRoleId());
+                    redisUtils.set(tokenValue, jsonObject);
+                }
             }
         } catch (Exception e) {
             return returnFail(ResultCode.AUTH_LOGIN_USER_TIME_OUT, "请重新登录系统");
