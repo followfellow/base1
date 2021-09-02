@@ -12,10 +12,12 @@ import com.demo.base.districtManager.response.FindDistrictResult;
 import com.demo.base.districtManager.response.QueryDistrictResult;
 import com.demo.base.districtManager.service.DistrictService;
 import com.demo.cache.district.DistrictRedisUtils;
+import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
  * @date 2021/8/13 14:43
  */
 @RestController
-@RequestMapping("districtAction")
+@RequestMapping(Constants.OAPI+"districtAction")
 public class DistrictAction extends BaseAction {
 
     @Autowired
@@ -45,6 +47,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("findDistrictList")
     @CommonBusiness(logRemark = "查询地区成功")
+    @PreAuthorize("hasAuthority('userAction:findDistrictList')")
     public Object findDistrictList(@RequestBody(required = false) FindDistrictParam findDistrictParam) {
         if (findDistrictParam == null) {
             findDistrictParam = FindDistrictParam.builder().build();
@@ -85,6 +88,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("addDistrict")
     @CommonBusiness(logRemark = "创建地区")
+    @PreAuthorize("hasAuthority('userAction:addDistrict')")
     public Object addDistrict(@RequestBody(required = false) AddDistrictParam addDistrictParam) {
         String checkError = checkAddDistrict(addDistrictParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -113,6 +117,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("queryDistrictById")
     @CommonBusiness(logRemark = "根据id查询地区")
+    @PreAuthorize("hasAuthority('userAction:queryDistrictById')")
     public Object queryDistrictById(@RequestBody(required = false) QueryDistrictParam queryDistrictParam) {
         if (queryDistrictParam == null || queryDistrictParam.getDistrictId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询id!");
@@ -132,6 +137,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("updateDistrict")
     @CommonBusiness(logRemark = "修改地区")
+    @PreAuthorize("hasAuthority('userAction:updateDistrict')")
     public Object updateDistrict(@RequestBody(required = false) UpdateDistrictParam updateDistrictParam) {
         String checkResult = checkUpdateDistrict(updateDistrictParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -161,6 +167,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("deleteDistrict")
     @CommonBusiness(logRemark = "删除地区")
+    @PreAuthorize("hasAuthority('userAction:deleteDistrict')")
     public Object deleteDistrict(@RequestBody(required = false) DeleteDistrictParam deleteDistrictParam) {
         if (deleteDistrictParam == null || deleteDistrictParam.getDistrictId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除地区");

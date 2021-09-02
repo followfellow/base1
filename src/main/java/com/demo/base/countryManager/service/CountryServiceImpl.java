@@ -2,7 +2,6 @@ package com.demo.base.countryManager.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
-import com.demo.action.vo.QueryPage;
 import com.demo.base.countryManager.dao.CountryDao;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.po.CountryDO;
@@ -34,8 +33,20 @@ public class CountryServiceImpl extends BaseServiceImpl implements CountryServic
      * @return java.util.List<com.demo.base.countryManager.response.FindCountryResult>
      */
     @Override
-    public List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage) {
-        return countryDao.findCountryList(findCountryParam,queryPage);
+    public List<CountryDTO> findCountryList(FindCountryParam findCountryParam) {
+        return countryDao.findCountryList(findCountryParam);
+    }
+
+    /*
+     * 
+     * @author kj
+     * @date 2021/9/2 11:10
+     * @param []
+     * @return java.util.List<com.demo.base.countryManager.dto.CountryDTO>
+     */
+    @Override
+    public List<CountryDTO> findCountrySelect(){
+        return countryDao.findCountrySelect();
     }
 
     /*

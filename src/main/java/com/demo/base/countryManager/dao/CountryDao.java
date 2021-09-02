@@ -1,6 +1,5 @@
 package com.demo.base.countryManager.dao;
 
-import com.demo.action.vo.QueryPage;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.request.FindCountryParam;
 import com.demo.dbutils.BaseDAO;
@@ -22,7 +21,16 @@ public interface CountryDao extends BaseDAO {
      * @param findCountryParam
      * @return java.util.List<com.demo.base.countryManager.response.FindCountryResult>
      */
-    List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage);
+    List<CountryDTO> findCountryList(FindCountryParam findCountryParam);
+    
+    /*
+     * 
+     * @author kj
+     * @date 2021/9/2 11:10
+     * @param []
+     * @return java.util.List<com.demo.base.countryManager.dto.CountryDTO>
+     */
+    List<CountryDTO> findCountrySelect();
 
     /*
      * 通过Id查询国家

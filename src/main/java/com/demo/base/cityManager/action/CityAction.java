@@ -12,10 +12,12 @@ import com.demo.base.cityManager.response.FindCityResult;
 import com.demo.base.cityManager.response.QueryCityResult;
 import com.demo.base.cityManager.service.CityService;
 import com.demo.cache.city.CityRedisUtils;
+import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
  * @date 2021/8/12 18:32
  */
 @RestController
-@RequestMapping("cityAction")
+@RequestMapping(Constants.OAPI+"cityAction")
 public class CityAction extends BaseAction {
 
     @Autowired
@@ -47,6 +49,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("findCityList")
     @CommonBusiness(logRemark = "查询城市成功")
+    @PreAuthorize("hasAuthority('userAction:findCityList')")
     public Object findCityList(@RequestBody(required = false) FindCityParam findCityParam) {
 
 
@@ -90,6 +93,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("addCity")
     @CommonBusiness(logRemark = "创建城市")
+    @PreAuthorize("hasAuthority('userAction:addCity')")
     public Object addCity(@RequestBody(required = false) AddCityParam addCityParam){
         String checkError = checkAddCity(addCityParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -118,6 +122,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("queryCityById")
     @CommonBusiness(logRemark = "根据id查询城市")
+    @PreAuthorize("hasAuthority('userAction:queryCityById')")
     public Object queryCityById(@RequestBody(required = false) QueryCityParam queryCityParam) {
         if (queryCityParam == null || queryCityParam.getCityId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询id!");
@@ -137,6 +142,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("updateCity")
     @CommonBusiness(logRemark = "修改城市")
+    @PreAuthorize("hasAuthority('userAction:updateCity')")
     public Object updateCity(@RequestBody(required = false) UpdateCityParam updateCityParam) {
         String checkResult = checkUpdateCity(updateCityParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -166,6 +172,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("deleteCity")
     @CommonBusiness(logRemark = "删除城市")
+    @PreAuthorize("hasAuthority('userAction:deleteCity')")
     public Object deleteCity(@RequestBody(required = false) DeleteCityParam deleteCityParam) {
         if (deleteCityParam == null || deleteCityParam.getCityId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除城市");

@@ -8,9 +8,7 @@ import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
 import com.demo.aop.CommonBusiness;
 import com.demo.base.cityManager.cache.CityCacheDTO;
-import com.demo.base.cityManager.service.CityService;
 import com.demo.base.districtManager.cache.DistrictCacheDTO;
-import com.demo.base.districtManager.service.DistrictService;
 import com.demo.base.provinceManager.cache.ProvinceCacheDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
@@ -20,9 +18,11 @@ import com.demo.base.provinceManager.response.QueryProvinceResult;
 import com.demo.base.provinceManager.service.ProvinceService;
 import com.demo.cache.QueryCacheUtils;
 import com.demo.cache.province.ProvinceRedisUtils;
+import com.demo.contants.Constants;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,15 +41,11 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping("provinceAction")
+@RequestMapping(Constants.OAPI+"provinceAction")
 public class ProvinceAction extends BaseAction {
 
     @Autowired
     private ProvinceService provinceService;
-    @Autowired
-    private CityService cityService;
-    @Autowired
-    private DistrictService districtService;
     @Autowired
     private ProvinceRedisUtils provinceRedisUtils;
     @Autowired
@@ -65,6 +61,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("findProvinceList")
     @CommonBusiness(logRemark = "查询省份列表")
+    @PreAuthorize("hasAuthority('userAction:findProvinceList')")
     public Object findProvinceList(@RequestBody(required = false) FindProvinceParam findProvinceParam) {
         if (findProvinceParam == null) {
             findProvinceParam = FindProvinceParam.builder().build();
@@ -106,6 +103,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("queryProvinceById")
     @CommonBusiness(logRemark = "根据id查询省份")
+    @PreAuthorize("hasAuthority('userAction:queryProvinceById')")
     public Object queryProvinceById(@RequestBody(required = false) QueryProvinceParam queryProvinceParam) {
         if (queryProvinceParam == null || queryProvinceParam.getProvinceId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询省份!");
@@ -130,6 +128,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("addProvince")
     @CommonBusiness(logRemark = "添加省份")
+    @PreAuthorize("hasAuthority('userAction:addProvince')")
     public Object addProvince(@RequestBody(required = false) AddProvinceParam addProvinceParam) {
         String checkResult = checkAddProvinceParam(addProvinceParam);
         if (!StringUtils.isEmpty(checkResult)) {
@@ -185,6 +184,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("updateProvince")
     @CommonBusiness(logRemark = "修改省份")
+    @PreAuthorize("hasAuthority('userAction:updateProvince')")
     public Object updateProvince(@RequestBody(required = false) UpdateProvinceParam updateProvinceParam) {
         String checkResult = checkUpdateProvinceParam(updateProvinceParam);
         if (!StringUtils.isEmpty(checkResult)) {
@@ -234,6 +234,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("deleteProvince")
     @CommonBusiness(logRemark = "删除省份")
+    @PreAuthorize("hasAuthority('userAction:deleteProvince')")
     public Object deleteProvince(@RequestBody(required = false) DeleteProvinceParam deleteProvinceParam) {
         if (deleteProvinceParam == null || deleteProvinceParam.getProvinceId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除省份!");
@@ -254,8 +255,6 @@ public class ProvinceAction extends BaseAction {
      * @param [findAreaTreeParam]
      * @return java.lang.Object
      */
-    @RequestMapping("findProvinceCityDistrictListFormCache")
-    @CommonBusiness(logRemark = "查询所有")
     public Object findProvinceCityDistrictListFormCache(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
 
         List<ProvinceCacheDTO> provinceCacheDTOList = queryCacheUtils.findCacheProvinceList();
@@ -299,6 +298,7 @@ public class ProvinceAction extends BaseAction {
      */
     @RequestMapping("findArea")
     @CommonBusiness(logRemark = "根据条件查询")
+    @PreAuthorize("hasAuthority('userAction:findArea')")
     public Object findArea(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
         if (findAreaTreeParam == null) {
             return returnSuccess("查询成功!", findProvinceCityDistrictListFormCache(null));
