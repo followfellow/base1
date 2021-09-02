@@ -1,8 +1,6 @@
 package com.demo.base.userManager.dao;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.demo.action.result.ResultCode;
 import com.demo.action.vo.QueryPage;
 import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.userManager.dto.UserDTO;
@@ -10,8 +8,6 @@ import com.demo.base.userManager.request.FindRoleUserParam;
 import com.demo.base.userManager.request.FindUserParam;
 import com.demo.contants.CodeConstants;
 import com.demo.dbutils.BaseDAOHibernateImpl;
-import com.demo.exception.BaseException;
-import com.demo.utils.JsonUtils;
 import com.demo.utils.StringUtils;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;
@@ -144,9 +140,11 @@ public class UserDaoImpl extends BaseDAOHibernateImpl implements UserDao {
      */
     @Override
     public UserDTO findUserByName(String userName) {
-        String sql = " select userId,userName,userRealName,businessId" +
-                " from sys_user_t  " +
-                " where userName = '" + userName + "' limit 1";
+        String sql = " select t1.userId,t1.userName,t1.userRealName,t1.businessId,t2.businessAllName" +
+                " from sys_user_t t1,org_business_t t2   " +
+                " where t1.userName = '" + userName + "' " +
+                " and t1.businessId = t2.businessId" +
+                " limit 1";
         List<UserDTO> list = findObjectBySql(sql, UserDTO.class);
         if (CollectionUtil.isNotEmpty(list)) {
             return list.get(0);

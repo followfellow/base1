@@ -8,16 +8,16 @@ import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
 import com.demo.action.vo.QueryPage;
 import com.demo.aop.CommonBusiness;
+import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.roleManager.po.RoleDO;
 import com.demo.base.roleManager.service.RoleService;
+import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.po.RoleJoinUserDO;
 import com.demo.base.userManager.po.UserDO;
-import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.userManager.request.*;
-import com.demo.base.userManager.service.UserService;
-import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.response.FindUserListResult;
 import com.demo.base.userManager.response.QueryUserResult;
+import com.demo.base.userManager.service.UserService;
 import com.demo.contants.CodeConstants;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
@@ -64,7 +64,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("findUserList")
     @CommonBusiness(logRemark = "查询用户列表")
-   //@PreAuthorize("hasAuthority('userAction:findUserList')")
+    @PreAuthorize("hasAuthority('userAction:findUserList')")
     public Object findUserList(@RequestBody(required = false) FindUserParam findUserParam) {
         if (findUserParam == null) {
             findUserParam = FindUserParam.builder().build();
@@ -120,7 +120,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("addUser")
     @CommonBusiness(logRemark = "添加用户")
-   //@PreAuthorize("hasAuthority('userAction:addUser')")
+    @PreAuthorize("hasAuthority('userAction:addUser')")
     public Object addUser(@RequestBody(required = false) AddUserParam addUserParam) {
         String resultError = checkAddUserParam(addUserParam);
         if (StringUtils.isNotBlank(resultError)) {
@@ -149,7 +149,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("queryUserById")
     @CommonBusiness(logRemark = "根据id查询用户")
-   //@PreAuthorize("hasAuthority('userAction:queryUserById')")
+    @PreAuthorize("hasAuthority('userAction:queryUserById')")
     public Object queryUserById(@RequestBody(required = false) QueryUserParam queryUserParam) {
         if (queryUserParam == null || queryUserParam.getUserId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询用户!");
@@ -171,7 +171,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("updateUser")
     @CommonBusiness(logRemark = "修改用户")
-   //@PreAuthorize("hasAuthority('userAction:updateUser')")
+    @PreAuthorize("hasAuthority('userAction:updateUser')")
     public Object updateUser(@RequestBody(required = false) UpdateUserParam updateUserParam) {
         String resultError = checkUpdateUserParam(updateUserParam);
         if (!StringUtils.isEmpty(resultError)) {
@@ -195,7 +195,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("modifyUserStatus")
     @CommonBusiness(logRemark = "修改用户状态")
-   //@PreAuthorize("hasAuthority('userAction:modifyUserStatus')")
+    @PreAuthorize("hasAuthority('userAction:modifyUserStatus')")
     public Object modifyUserStatus(@RequestBody(required = false) ModifyUserStatusParam modifyUserStatusParam) {
         if (modifyUserStatusParam == null || modifyUserStatusParam.getUserId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择修改用户!");
@@ -222,7 +222,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("resetPassword")
     @CommonBusiness(logRemark = "重置密码")
-   //@PreAuthorize("hasAuthority('userAction:resetPassword')")
+    @PreAuthorize("hasAuthority('userAction:resetPassword')")
     public Object resetPassword(@RequestBody(required = false) ResetPasswordParam resetPasswordParam) {
         if (resetPasswordParam == null || resetPasswordParam.getUserId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择用户!");
@@ -250,7 +250,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("deleteUser")
     @CommonBusiness(logRemark = "删除用户")
-   //@PreAuthorize("hasAuthority('userAction:deleteUser')")
+    @PreAuthorize("hasAuthority('userAction:deleteUser')")
     public Object deleteUser(@RequestBody(required = false) DeleteUserParam deleteUserParam) {
         if (deleteUserParam == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除用户");
@@ -275,7 +275,7 @@ public class UserAction extends BaseAction {
      **/
     @RequestMapping("operateRoleUser")
     @CommonBusiness(logRemark = "添加角色用户")
-   //@PreAuthorize("hasAuthority('userAction:operateRoleUser')")
+    @PreAuthorize("hasAuthority('userAction:operateRoleUser')")
     public Object operateRoleUser(@RequestBody OperateRoleUserParam operateRoleUserParam) {
         if (operateRoleUserParam == null || operateRoleUserParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择角色!");
@@ -313,7 +313,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("findRoleUser")
     @CommonBusiness(logRemark = "查询角色用户列表")
-   //@PreAuthorize("hasAuthority('userAction:findRoleUser')")
+    @PreAuthorize("hasAuthority('userAction:findRoleUser')")
     public Object findRoleUser(@RequestBody FindRoleUserParam findRoleUserParam) {
         if (findRoleUserParam == null || findRoleUserParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择角色!");
@@ -340,7 +340,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("deleteRoleUser")
     @CommonBusiness(logRemark = "删除角色用户")
-   //@PreAuthorize("hasAuthority('userAction:deleteRoleUser')")
+    @PreAuthorize("hasAuthority('userAction:deleteRoleUser')")
     public Object deleteRoleUser(@RequestBody DeleteUserRoleParam deleteUserRoleParam) {
         if (deleteUserRoleParam == null || deleteUserRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择角色!");
@@ -361,7 +361,7 @@ public class UserAction extends BaseAction {
      */
     @RequestMapping("findNoRoleUser")
     @CommonBusiness(logRemark = "查询非该角色用户列表")
-   //@PreAuthorize("hasAuthority('userAction:findNoRoleUser')")
+    @PreAuthorize("hasAuthority('userAction:findNoRoleUser')")
     public Object findNoRoleUser(@RequestBody FindRoleUserParam findRoleUserParam) {
         if (findRoleUserParam == null || findRoleUserParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择角色!");

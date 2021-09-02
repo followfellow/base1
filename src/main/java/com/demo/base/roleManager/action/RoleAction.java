@@ -51,7 +51,7 @@ public class RoleAction extends BaseAction {
      */
     @RequestMapping("findRoleList")
     @CommonBusiness(logRemark = "查询角色树")
-   //@PreAuthorize("hasAuthority('roleAction:findRoleList')")
+   @PreAuthorize("hasAuthority('roleAction:findRoleList')")
     public Object findRoleList() {
         List<RoleDTO> roleList = roleService.findRoleList();
         List<FindRoleResult> findRoleResultList = roleList.stream().map(roleDTO -> {
@@ -74,7 +74,7 @@ public class RoleAction extends BaseAction {
      */
     @RequestMapping("addRole")
     @CommonBusiness(logRemark = "创建角色")
-   //@PreAuthorize("hasAuthority('roleAction:addRole')")
+   @PreAuthorize("hasAuthority('roleAction:addRole')")
     public Object addRole(@RequestBody(required = false) AddRoleParam addRoleParam) {
         String checkError = checkAddRole(addRoleParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -99,7 +99,7 @@ public class RoleAction extends BaseAction {
      */
     @RequestMapping("queryRoleById")
     @CommonBusiness(logRemark = "根据id查询角色")
-   //@PreAuthorize("hasAuthority('roleAction:queryRoleById')")
+   @PreAuthorize("hasAuthority('roleAction:queryRoleById')")
     public Object queryRoleById(@RequestBody(required = false) QueryRoleParam queryRoleParam) {
         if (queryRoleParam == null || queryRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询角色!");
@@ -121,7 +121,7 @@ public class RoleAction extends BaseAction {
      */
     @RequestMapping("updateRole")
     @CommonBusiness(logRemark = "修改角色")
-   //@PreAuthorize("hasAuthority('roleAction:updateRole')")
+   @PreAuthorize("hasAuthority('roleAction:updateRole')")
     public Object updateRole(@RequestBody(required = false) UpdateRoleParam updateRoleParam) {
         String checkResult = checkUpdateRole(updateRoleParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -149,7 +149,7 @@ public class RoleAction extends BaseAction {
      */
     @RequestMapping("deleteRole")
     @CommonBusiness(logRemark = "删除角色")
-   //@PreAuthorize("hasAuthority('roleAction:deleteRole')")
+   @PreAuthorize("hasAuthority('roleAction:deleteRole')")
     public Object deleteRole(@RequestBody(required = false) DeleteRoleParam deleteRoleParam) {
         if (deleteRoleParam == null || deleteRoleParam.getRoleId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除角色");
