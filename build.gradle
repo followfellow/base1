@@ -55,7 +55,7 @@ dependencies {
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version:'5.2'
-    implementation  'com.demo.common:common-util:3.4.2-Release'
+    implementation  'com.demo.common:common-util:3.4.7-Release'
     implementation  'com.demo.dbutils:db-util:3.1.6-Release'
     implementation  'com.demo.numberMachineUtils:numberMachine-util:3.0.5-Release'
 
