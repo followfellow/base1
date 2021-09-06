@@ -3,8 +3,8 @@ package com.demo.base.roleManager.service;
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
 import com.demo.base.roleManager.dao.RoleDao;
-import com.demo.base.roleManager.po.RoleDO;
 import com.demo.base.roleManager.dto.RoleDTO;
+import com.demo.base.roleManager.po.RoleDO;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -91,9 +91,10 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteRole(Long roleId) {
-        String sql = "delete from sys_role_t where roleId = " + roleId;
+        Long businessId = roleDao.getCurrUserOrgId();
+        String sql = "delete from sys_role_t where roleId = " + roleId + " and businessId = " + businessId + " limit 1";
         roleDao.executeSql(sql);
-        sql = "delete from sys_role_menu_t where roleId = " + roleId;
+        sql = "delete from sys_role_menu_t where roleId = " + roleId + " and businessId = " + businessId;
         roleDao.executeSql(sql);
     }
 

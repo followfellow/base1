@@ -85,7 +85,9 @@ public class BusinessServiceImpl extends BaseServiceImpl implements BusinessServ
                 //如果有效期有值则修改
                 (StringUtils.isNotBlank(businessDO.getValidTime()) ? (" validTime = '" + businessDO.getValidTime() + "' , ") : "") +
                 " cellphone = '" + businessDO.getContactPhoneNo() + "'  " +
-                " where userName = '" + StringEscapeUtils.escapeSql(businessDO.getUserName()) + "' limit 1";
+                " where userName = '" + StringEscapeUtils.escapeSql(businessDO.getUserName()) + "' " +
+                " and businessId =  " + businessDO.getBusinessId() +
+                " limit 1";
         businessDao.executeSql(sql);
     }
 
@@ -103,7 +105,7 @@ public class BusinessServiceImpl extends BaseServiceImpl implements BusinessServ
         String sql = "delete from org_business_t where businessId = " + businessId + " limit 1";
         businessDao.executeSql(sql);
         //删除单位分组绑定表
-        sql = "delete from sys_juris_group_org_t where businessId = " + businessId;
+        sql = "delete from sys_juris_group_org_t where businessId = " + businessId + " limit 1";
         businessDao.executeSql(sql);
         //删除单位下的用户表
         sql = "delete from sys_user_t where businessId = " + businessId;
@@ -140,7 +142,11 @@ public class BusinessServiceImpl extends BaseServiceImpl implements BusinessServ
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void resetPassword(ResetPasswordParam resetPasswordParam) {
-        String sql = "update sys_user_t set password = '" + resetPasswordParam.getPassword() + "' where userName = '" + StringEscapeUtils.escapeSql(resetPasswordParam.getUserName()) + "' limit 1";
+        String sql = " update sys_user_t " +
+                " set password = '" + resetPasswordParam.getPassword() + "' " +
+                " where userName = '" + StringEscapeUtils.escapeSql(resetPasswordParam.getUserName()) + "'" +
+                " and businessId = " + businessDao.getCurrUserOrgId() +
+                " limit 1";
         businessDao.executeSql(sql);
     }
 
@@ -154,9 +160,16 @@ public class BusinessServiceImpl extends BaseServiceImpl implements BusinessServ
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void modifyStatus(ModifyStatusParam modifyStatusParam) {
-        String sql = "update sys_user_t set flag = " + modifyStatusParam.getFlag() + " where userName = '" + StringEscapeUtils.escapeSql(modifyStatusParam.getUserName()) + "' limit 1";
+        String sql = " update sys_user_t " +
+                " set flag = " + modifyStatusParam.getFlag() + " " +
+                " where userName = '" + StringEscapeUtils.escapeSql(modifyStatusParam.getUserName()) + "'" +
+                " and businessId = " + modifyStatusParam.getBusinessId() +
+                " limit 1";
         businessDao.executeSql(sql);
-        sql = "update org_business_t set flag = " + modifyStatusParam.getFlag() + " where businessId = " + modifyStatusParam.getBusinessId() + " limit 1";
+        sql = " update org_business_t " +
+                " set flag = " + modifyStatusParam.getFlag() + " " +
+                " where businessId = " + modifyStatusParam.getBusinessId() + "" +
+                " limit 1";
         businessDao.executeSql(sql);
     }
 

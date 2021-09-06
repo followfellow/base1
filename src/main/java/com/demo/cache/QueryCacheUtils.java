@@ -6,6 +6,7 @@ import com.demo.base.districtManager.cache.DistrictCacheDTO;
 import com.demo.base.provinceManager.cache.ProvinceCacheDTO;
 import com.demo.contants.RedisConstants;
 import com.demo.redis.RedisUtils;
+import com.demo.system.codeManager.dto.CodeDTO;
 import com.demo.system.propertyManager.dto.PropertyDTO;
 import com.demo.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -163,6 +164,24 @@ public class QueryCacheUtils {
         return null;
     }
 
+    /**
+     * 根据code名称从缓存中获取code信息
+     *
+     * @param: codeName
+     * @author:zc
+     * @date 2019/12/13 10:24
+     */
+    public List<CodeDTO> queryCacheCodeByCodeName(String codeName) {
+        if (StringUtils.isEmpty(codeName)) {
+            return null;
+        }
+        Object object = redisUtils.getRedisByKey(RedisConstants.CODE, codeName);
+        if (object != null) {
+            return (List<CodeDTO>) object;
+        }
+        return null;
+
+    }
 
 }
 

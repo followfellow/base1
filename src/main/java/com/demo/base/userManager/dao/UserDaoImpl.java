@@ -13,6 +13,8 @@ import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 用户管理 DaoMysqlImpl
@@ -148,6 +150,26 @@ public class UserDaoImpl extends BaseDAOHibernateImpl implements UserDao {
         List<UserDTO> list = findObjectBySql(sql, UserDTO.class);
         if (CollectionUtil.isNotEmpty(list)) {
             return list.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * @param userIdList
+     * @author wxc
+     * @date 2021/9/6 11:47
+     */
+    @Override
+    public List<UserDTO> findUserByIds(List<Long> userIdList) {
+        if (CollectionUtil.isNotEmpty(userIdList)) {
+            String ids = userIdList.stream().map(Objects::toString).collect(Collectors.joining(","));
+            String sql = " select userId " +
+                    " from sys_user_t  " +
+                    " where userIdentity = " + CodeConstants.USER_IDENTITY_PTYH +
+                    " and businessId <> " + getCurrUserOrgId() +
+                    " and userId in (" + ids + ")" +
+                    " limit 1";
+            return findObjectBySql(sql, UserDTO.class);
         }
         return null;
     }

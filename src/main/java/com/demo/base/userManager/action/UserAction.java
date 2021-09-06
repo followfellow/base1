@@ -291,6 +291,9 @@ public class UserAction extends BaseAction {
         if (roleDO.getRolePid() == 0L) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "无法查看系统管理员用户信息!");
         }
+        if(userService.checkUsersIfInBusiness(operateRoleUserParam.getUserIdList())){
+            return returnFail(ResultCode.AUTH_PARAM_ERROR, "存在非法用户数据，无法操作!");
+        }
         List<RoleJoinUserDO> roleJoinUserDOList = new ArrayList<>();
         SequenceNumberBizBean sequenceNumberBizBean = numberMachineUtils.getTableIDByCount(NumberMachineConstants.ROLE_JOIN_USER_TABLE_ID_SEQ, userIdList.size());
         userIdList.forEach(userId -> roleJoinUserDOList.add(RoleJoinUserDO.builder()

@@ -3,11 +3,11 @@ package com.demo.base.userManager.service;
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
 import com.demo.action.vo.QueryPage;
+import com.demo.base.roleManager.dto.RoleDTO;
 import com.demo.base.userManager.dao.UserDao;
+import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.po.RoleJoinUserDO;
 import com.demo.base.userManager.po.UserDO;
-import com.demo.base.roleManager.dto.RoleDTO;
-import com.demo.base.userManager.dto.UserDTO;
 import com.demo.base.userManager.request.*;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
@@ -102,7 +102,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteUser(DeleteUserParam deleteUserParam) {
-        String sql = "delete from sys_user_t where userId = " + deleteUserParam.getUserId() + " limit 1";
+        String sql = " delete from sys_user_t " +
+                " where userId = " + deleteUserParam.getUserId() +
+                " and businessId = " + userDao.getCurrUserOrgId() +
+                " limit 1";
         userDao.executeSql(sql);
     }
 
@@ -159,7 +162,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void modifyUserStatus(ModifyUserStatusParam modifyUserStatusParam) {
-        String sql = "update sys_user_t set flag = " + modifyUserStatusParam.getFlag() + " where userId = " + modifyUserStatusParam.getUserId() + " limit 1";
+        String sql = " update sys_user_t " +
+                " set flag = " + modifyUserStatusParam.getFlag() +
+                " where userId = " + modifyUserStatusParam.getUserId() +
+                " and businessId = " + userDao.getCurrUserOrgId() +
+                " limit 1";
         userDao.executeSql(sql);
     }
 
@@ -173,7 +180,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void resetPassword(ResetPasswordParam resetPasswordParam) {
-        String sql = "update sys_user_t set password = '" + StringEscapeUtils.escapeSql(resetPasswordParam.getPassword()) + "' where userId = " + resetPasswordParam.getUserId() + " limit 1";
+        String sql = " update sys_user_t " +
+                " set password = '" + StringEscapeUtils.escapeSql(resetPasswordParam.getPassword()) + "'" +
+                " where userId = " + resetPasswordParam.getUserId() +
+                " and businessId = " + userDao.getCurrUserOrgId() +
+                " limit 1";
         userDao.executeSql(sql);
     }
 
@@ -187,7 +198,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteRoleUser(DeleteUserRoleParam deleteUserRoleParam) {
-        String sql = "delete from  sys_role_join_user_t where userId = " + deleteUserRoleParam.getUserId() + " and roleId = " + deleteUserRoleParam.getRoleId() + " limit 1";
+        String sql = " delete from  sys_role_join_user_t " +
+                " where userId = " + deleteUserRoleParam.getUserId() +
+                " and roleId = " + deleteUserRoleParam.getRoleId() +
+                " and businessId = " + userDao.getCurrUserOrgId() +
+                " limit 1";
         userDao.executeSql(sql);
     }
 
@@ -226,5 +241,17 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public UserDTO findUserByName(String userName) {
         return userDao.findUserByName(userName);
+    }
+
+    /**
+     * 校验操作绑定用户是否属于该单位
+     *
+     * @param userIdList
+     * @author wxc
+     * @date 2021/9/6 11:46
+     */
+    @Override
+    public boolean checkUsersIfInBusiness(List<Long> userIdList) {
+        return CollectionUtil.isNotEmpty(userDao.findUserByIds(userIdList));
     }
 }

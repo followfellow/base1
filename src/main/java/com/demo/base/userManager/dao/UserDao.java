@@ -73,4 +73,11 @@ public interface UserDao extends BaseDAO {
      * @date 2021/8/31 9:09
      */
     UserDTO findUserByName(String userName);
+
+    /**
+     * @param userIdList
+     * @author wxc
+     * @date 2021/9/6 11:47
+     */
+    List<UserDTO> findUserByIds(List<Long> userIdList);
 }

@@ -152,4 +152,13 @@ public interface UserService {
      * @date 2021/8/31 9:08
      */
     UserDTO findUserByName(String userName);
+
+    /**
+     * 校验操作绑定用户是否属于该单位
+     *
+     * @param userIdList
+     * @author wxc
+     * @date 2021/9/6 11:46
+     */
+    boolean checkUsersIfInBusiness(List<Long> userIdList);
 }

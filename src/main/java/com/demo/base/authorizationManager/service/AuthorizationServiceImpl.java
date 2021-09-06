@@ -6,7 +6,6 @@ import com.demo.base.authorizationManager.dao.AuthorizationDao;
 import com.demo.base.authorizationManager.po.JurisGroupMenuDO;
 import com.demo.base.authorizationManager.po.RoleMenuDO;
 import com.demo.system.menuManager.dto.MenuDTO;
-import com.demo.system.menuManager.request.FindMenuParam;
 import com.demo.utils.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +51,7 @@ public class AuthorizationServiceImpl extends BaseServiceImpl implements Authori
     @Transactional(rollbackOn = Exception.class)
     public void operateRoleMenu(Long roleId, List<RoleMenuDO> roleMenuDOList) {
         //删除角色原来的菜单权限
-        String sql = "delete from sys_role_menu_t where roleId = " + roleId;
+        String sql = "delete from sys_role_menu_t where roleId = " + roleId + " and businessId = " + authorizationDao.getCurrUserOrgId();
         authorizationDao.executeSql(sql);
         //保存角色菜单
         for (RoleMenuDO roleMenuDO : roleMenuDOList) {

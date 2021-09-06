@@ -29,6 +29,7 @@ import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
 import com.demo.contants.PropertyConstants;
 import com.demo.dbutils.BaseApplicationDO;
+import com.demo.system.codeManager.dto.CodeDTO;
 import com.demo.system.propertyManager.dto.PropertyDTO;
 import com.demo.utils.PinyinUtils;
 import com.demo.utils.StringUtils;
@@ -786,20 +787,17 @@ public class BusinessAction extends BaseAction {
      * @date 2021/7/23 11:40
      */
     private String switchTip(Integer businessType) {
-        if (businessType != null) {
-            switch (businessType) {
-                case 0:
-                    return "运营商";
-                case 1:
-                    return "目的地";
-                case 2:
-                    return "分销商平台";
-                case 3:
-                    return "旅行社";
-                default:
-                    return "单位";
-            }
+        if (businessType == null) {
+            return "单位";
         }
-        return "单位";
+        List<CodeDTO> codeDTOList = queryCacheUtils.queryCacheCodeByCodeName(CodeConstants.BUSINESS_TYPE);
+        if (CollectionUtil.isEmpty(codeDTOList)) {
+            return "单位";
+        }
+        List<CodeDTO> codeDTOS = codeDTOList.stream().filter(i -> businessType.equals(Integer.parseInt(i.getCodeKey()))).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(codeDTOS)) {
+            return "单位";
+        }
+        return codeDTOS.get(0).getCodeValue();
     }
 }
