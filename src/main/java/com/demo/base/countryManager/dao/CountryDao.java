@@ -1,5 +1,6 @@
 package com.demo.base.countryManager.dao;
 
+import com.demo.action.vo.QueryPage;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.request.FindCountryParam;
 import com.demo.dbutils.BaseDAO;
@@ -21,7 +22,7 @@ public interface CountryDao extends BaseDAO {
      * @param findCountryParam
      * @return java.util.List<com.demo.base.countryManager.response.FindCountryResult>
      */
-    List<CountryDTO> findCountryList(FindCountryParam findCountryParam);
+    List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage);
     
     /*
      * 

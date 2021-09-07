@@ -64,4 +64,6 @@ public interface DistrictService {
      * @return boolean
      */
     boolean checkNameIfExist(String districtName, Long districtId);
+
+    List<DistrictDTO> findDistrictSelect(FindDistrictParam findDistrictParam);
 }

@@ -100,4 +100,9 @@ public class CityServiceImpl extends BaseServiceImpl implements CityService {
         String sql = "delete from pub_city_t where cityId = " + cityId;
         cityDao.executeSql(sql);
     }
+
+    @Override
+    public List<CityDTO> findCitySelect(FindCityParam findCityParam) {
+        return cityDao.findCitySelect(findCityParam);
+    }
 }

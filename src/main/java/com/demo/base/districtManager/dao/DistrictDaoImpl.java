@@ -24,9 +24,7 @@ public class DistrictDaoImpl extends BaseDAOHibernateImpl implements DistrictDao
                 sql += " and cityId = '" + findDistrictParam.getCityId() + "' ";
             }
         }
-//        sql += " and businessId = " + findCountryParam.getBusinessId();
         return findObjectBySql(sql, DistrictDTO.class);
-//        return findObjectBySql(sql, DistrictDTO.class,queryPage);
     }
 
     @Override
@@ -37,6 +35,17 @@ public class DistrictDaoImpl extends BaseDAOHibernateImpl implements DistrictDao
         }
 //        sql += " and businessId = " + getCurrUserOrgId();
         sql += " limit 1  ";
+        return findObjectBySql(sql, DistrictDTO.class);
+    }
+
+    @Override
+    public List<DistrictDTO> findDistrictSelect(FindDistrictParam findDistrictParam) {
+        String sql = "select districtId,districtName from pub_district_t where 1 = 1";
+        if (findDistrictParam != null) {
+            if (!StringUtils.isEmpty(findDistrictParam.getCityId())) {
+                sql += " and cityId = '" + findDistrictParam.getCityId() + "' ";
+            }
+        }
         return findObjectBySql(sql, DistrictDTO.class);
     }
 }

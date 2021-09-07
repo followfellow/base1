@@ -30,4 +30,6 @@ public interface CityDao extends BaseDAO {
      * @return java.util.List<cityDTO>
      */
     List<CityDTO> findcityByName(String cityName, Long cityId);
+
+    List<CityDTO> findCitySelect(FindCityParam findCityParam);
 }

@@ -2,6 +2,7 @@ package com.demo.base.cityManager.action;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
 import com.demo.aop.CommonBusiness;
@@ -11,6 +12,9 @@ import com.demo.base.cityManager.request.*;
 import com.demo.base.cityManager.response.FindCityResult;
 import com.demo.base.cityManager.response.QueryCityResult;
 import com.demo.base.cityManager.service.CityService;
+import com.demo.base.provinceManager.request.FindAreaTreeParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
+import com.demo.base.provinceManager.service.ProvinceService;
 import com.demo.cache.city.CityRedisUtils;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +38,11 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(Constants.OAPI+"cityAction")
+//@RequestMapping("cityAction")
 public class CityAction extends BaseAction {
 
+    @Autowired
+    private ProvinceService provinceService;
     @Autowired
     private CityService cityService;
     @Autowired
@@ -49,24 +57,23 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("findCityList")
     @CommonBusiness(logRemark = "查询城市成功")
-    @PreAuthorize("hasAuthority('userAction:findCityList')")
-    public Object findCityList(@RequestBody(required = false) FindCityParam findCityParam) {
-
-
-        if (findCityParam == null) {
-            findCityParam = FindCityParam.builder().build();
+    @PreAuthorize("hasAuthority('cityAction:findCityList')")
+    public Object findCityList(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
+        if (findAreaTreeParam == null) {
+            findAreaTreeParam = FindAreaTreeParam.builder().build();
         }
-        List<CityDTO> cityDTOList = cityService.findCityList(findCityParam);
-        List<FindCityResult> findCityResultList = processCityInfo(cityDTOList);
-
-        int size = findCityResultList.size();
-        FindCityResult build = FindCityResult.builder()
-                .findCityResultList(findCityResultList)
-                .citySize(size)
-                .build();
-
-//        return returnSuccessListByPage(findCityResultList, queryPage, "查询城市列表成功!");
-        return returnSuccess("查询城市列表成功!",build );
+        List<FindAreaResult> cityList = provinceService.findCityNode(null);
+        List<FindAreaResult> districtList = provinceService.findDistrictNode(null);
+        //size
+        LinkedHashMap<Long, List<FindAreaResult>> districtMap = districtList.stream().collect(Collectors.groupingBy(FindAreaResult::getPid, LinkedHashMap::new, Collectors.toList()));
+        for (FindAreaResult findAreaResult : cityList) {
+            if (CollectionUtil.isNotEmpty(districtMap.get(findAreaResult.getId()))) {
+                findAreaResult.setSize(districtMap.get(findAreaResult.getId()).size());
+            }
+        }
+        LinkedHashMap<Long, List<FindAreaResult>> cityMap = cityList.stream().collect(Collectors.groupingBy(FindAreaResult::getPid, LinkedHashMap::new, Collectors.toList()));
+        List<FindAreaResult> cityListResult = cityMap.get(findAreaTreeParam.getProvinceId());
+        return returnSuccess("查询城市列表成功!",cityListResult );
     }
 
     /**
@@ -85,6 +92,25 @@ public class CityAction extends BaseAction {
     }
 
     /*
+     * 
+     * @author kj
+     * @date 2021/9/6 16:55  
+     * @param [findCityParam]
+     * @return java.lang.Object
+     */
+    @RequestMapping("findCitySelect")
+    @CommonBusiness(logRemark = "查询省份下拉")
+    @PreAuthorize("hasAuthority('cityAction:findCitySelect')")
+    public Object findCitySelect(@RequestBody(required = false) FindCityParam findCityParam){
+        if (findCityParam == null) {
+            findCityParam = FindCityParam.builder().build();
+        }
+        List<CityDTO> cityDTOList = cityService.findCitySelect(findCityParam);
+        List<FindCityResult> findCityResultList = processCityInfo(cityDTOList);
+        return returnSuccess("查询城市下拉成功!", findCityResultList);
+    }
+
+    /*
      * 添加城市
      * @author kj
      * @date 2021/8/13 11:34  
@@ -93,7 +119,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("addCity")
     @CommonBusiness(logRemark = "创建城市")
-    @PreAuthorize("hasAuthority('userAction:addCity')")
+    @PreAuthorize("hasAuthority('cityAction:addCity')")
     public Object addCity(@RequestBody(required = false) AddCityParam addCityParam){
         String checkError = checkAddCity(addCityParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -122,7 +148,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("queryCityById")
     @CommonBusiness(logRemark = "根据id查询城市")
-    @PreAuthorize("hasAuthority('userAction:queryCityById')")
+    @PreAuthorize("hasAuthority('cityAction:queryCityById')")
     public Object queryCityById(@RequestBody(required = false) QueryCityParam queryCityParam) {
         if (queryCityParam == null || queryCityParam.getCityId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询id!");
@@ -142,7 +168,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("updateCity")
     @CommonBusiness(logRemark = "修改城市")
-    @PreAuthorize("hasAuthority('userAction:updateCity')")
+    @PreAuthorize("hasAuthority('cityAction:updateCity')")
     public Object updateCity(@RequestBody(required = false) UpdateCityParam updateCityParam) {
         String checkResult = checkUpdateCity(updateCityParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -172,7 +198,7 @@ public class CityAction extends BaseAction {
      */
     @RequestMapping("deleteCity")
     @CommonBusiness(logRemark = "删除城市")
-    @PreAuthorize("hasAuthority('userAction:deleteCity')")
+    @PreAuthorize("hasAuthority('cityAction:deleteCity')")
     public Object deleteCity(@RequestBody(required = false) DeleteCityParam deleteCityParam) {
         if (deleteCityParam == null || deleteCityParam.getCityId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除城市");

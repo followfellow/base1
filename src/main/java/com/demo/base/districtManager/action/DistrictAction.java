@@ -11,6 +11,9 @@ import com.demo.base.districtManager.request.*;
 import com.demo.base.districtManager.response.FindDistrictResult;
 import com.demo.base.districtManager.response.QueryDistrictResult;
 import com.demo.base.districtManager.service.DistrictService;
+import com.demo.base.provinceManager.request.FindAreaTreeParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
+import com.demo.base.provinceManager.service.ProvinceService;
 import com.demo.cache.district.DistrictRedisUtils;
 import com.demo.contants.Constants;
 import com.demo.contants.NumberMachineConstants;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +35,11 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(Constants.OAPI+"districtAction")
+//@RequestMapping("districtAction")
 public class DistrictAction extends BaseAction {
 
+    @Autowired
+    private ProvinceService provinceService;
     @Autowired
     private DistrictService districtService;
     @Autowired
@@ -47,21 +54,15 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("findDistrictList")
     @CommonBusiness(logRemark = "查询地区成功")
-    @PreAuthorize("hasAuthority('userAction:findDistrictList')")
-    public Object findDistrictList(@RequestBody(required = false) FindDistrictParam findDistrictParam) {
-        if (findDistrictParam == null) {
-            findDistrictParam = FindDistrictParam.builder().build();
+    @PreAuthorize("hasAuthority('districtAction:findDistrictList')")
+    public Object findDistrictList(@RequestBody(required = false) FindAreaTreeParam findAreaTreeParam) {
+        if (findAreaTreeParam == null) {
+            findAreaTreeParam = FindAreaTreeParam.builder().build();
         }
-        List<DistrictDTO> districtDTOList = districtService.findDistrictList(findDistrictParam);
-        List<FindDistrictResult> findDistrictResultList = processDistrictInfo(districtDTOList);
-
-        int size = findDistrictResultList.size();
-        FindDistrictResult findDistrictResult = FindDistrictResult.builder()
-                .findDistrictResultList(findDistrictResultList)
-                .districtSize(size)
-                .build();
-        return returnSuccess("查询地区列表成功!", findDistrictResult);
-//        return returnSuccessListByPage(findDistrictResultList, queryPage, "查询地区列表成功!");
+        List<FindAreaResult> districtList = provinceService.findDistrictNode(null);
+        LinkedHashMap<Long, List<FindAreaResult>> districtMap = districtList.stream().collect(Collectors.groupingBy(FindAreaResult::getPid, LinkedHashMap::new, Collectors.toList()));
+        List<FindAreaResult> districtListResult = districtMap.get(findAreaTreeParam.getCityId());
+        return returnSuccess("查询地区列表成功!", districtListResult);
     }
 
     /**
@@ -80,6 +81,25 @@ public class DistrictAction extends BaseAction {
     }
 
     /*
+     * 
+     * @author kj
+     * @date 2021/9/6 17:04  
+     * @param [findDistrictParam]
+     * @return java.lang.Object
+     */
+    @RequestMapping("findDistrictSelect")
+    @CommonBusiness(logRemark = "查询地区成功")
+    @PreAuthorize("hasAuthority('districtAction:findDistrictSelect')")
+    public Object findDistrictSelect(@RequestBody(required = false) FindDistrictParam findDistrictParam){
+        if (findDistrictParam == null) {
+            findDistrictParam = FindDistrictParam.builder().build();
+        }
+        List<DistrictDTO> districtDTOList = districtService.findDistrictSelect(findDistrictParam);
+        List<FindDistrictResult> findDistrictResultList = processDistrictInfo(districtDTOList);
+        return returnSuccess("查询地区列表成功!", findDistrictResultList);
+    }
+
+    /*
      * 添加地区
      * @author kj
      * @date 2021/8/13 11:34
@@ -88,7 +108,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("addDistrict")
     @CommonBusiness(logRemark = "创建地区")
-    @PreAuthorize("hasAuthority('userAction:addDistrict')")
+    @PreAuthorize("hasAuthority('districtAction:addDistrict')")
     public Object addDistrict(@RequestBody(required = false) AddDistrictParam addDistrictParam) {
         String checkError = checkAddDistrict(addDistrictParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -117,7 +137,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("queryDistrictById")
     @CommonBusiness(logRemark = "根据id查询地区")
-    @PreAuthorize("hasAuthority('userAction:queryDistrictById')")
+    @PreAuthorize("hasAuthority('districtAction:queryDistrictById')")
     public Object queryDistrictById(@RequestBody(required = false) QueryDistrictParam queryDistrictParam) {
         if (queryDistrictParam == null || queryDistrictParam.getDistrictId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询id!");
@@ -137,7 +157,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("updateDistrict")
     @CommonBusiness(logRemark = "修改地区")
-    @PreAuthorize("hasAuthority('userAction:updateDistrict')")
+    @PreAuthorize("hasAuthority('districtAction:updateDistrict')")
     public Object updateDistrict(@RequestBody(required = false) UpdateDistrictParam updateDistrictParam) {
         String checkResult = checkUpdateDistrict(updateDistrictParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -167,7 +187,7 @@ public class DistrictAction extends BaseAction {
      */
     @RequestMapping("deleteDistrict")
     @CommonBusiness(logRemark = "删除地区")
-    @PreAuthorize("hasAuthority('userAction:deleteDistrict')")
+    @PreAuthorize("hasAuthority('districtAction:deleteDistrict')")
     public Object deleteDistrict(@RequestBody(required = false) DeleteDistrictParam deleteDistrictParam) {
         if (deleteDistrictParam == null || deleteDistrictParam.getDistrictId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除地区");

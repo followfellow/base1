@@ -1,5 +1,6 @@
 package com.demo.base.countryManager.service;
 
+import com.demo.action.vo.QueryPage;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.po.CountryDO;
 import com.demo.base.countryManager.request.FindCountryParam;
@@ -20,7 +21,7 @@ public interface CountryService {
      * @param [findCountryParam]
      * @return java.util.List<com.demo.base.countryManager.response.FindCountryResult>
      */
-    List<CountryDTO> findCountryList(FindCountryParam findCountryParam);
+    List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage);
 
     /*
      * 

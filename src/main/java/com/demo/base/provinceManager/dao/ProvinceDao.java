@@ -1,9 +1,9 @@
 package com.demo.base.provinceManager.dao;
 
-import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
 import com.demo.dbutils.BaseDAO;
 
 import java.util.List;
@@ -34,5 +34,11 @@ public interface ProvinceDao extends BaseDAO {
     List<ProvinceDTO> findProvinceByName(String provinceName, Long provinceId);
 
 
-    List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam);
+    List<FindAreaResult> findProvinceNode(FindAreaTreeParam findAreaTreeParam);
+
+    List<FindAreaResult> findCityNode(FindAreaTreeParam findAreaTreeParam);
+
+    List<FindAreaResult> findDistrictNode(FindAreaTreeParam findAreaTreeParam);
+
+    List<ProvinceDTO> findProvinceSelect(FindProvinceParam findProvinceParam);
 }

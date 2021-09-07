@@ -66,4 +66,6 @@ public interface CityService {
      * @return void
      */
     void deleteCity(Long cityId);
+
+    List<CityDTO> findCitySelect(FindCityParam findCityParam);
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.demo.action.BaseAction;
 import com.demo.action.result.ResultCode;
+import com.demo.action.vo.QueryPage;
 import com.demo.aop.CommonBusiness;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.po.CountryDO;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(Constants.OAPI+"countryAction")
+//@RequestMapping("countryAction")
 public class CountryAction extends BaseAction {
 
     @Autowired
@@ -49,14 +51,15 @@ public class CountryAction extends BaseAction {
      */
     @RequestMapping("findCountryList")
     @CommonBusiness(logRemark = "查询国家")
-    @PreAuthorize("hasAuthority('userAction:findCountryList')")
+    @PreAuthorize("hasAuthority('countryAction:findCountryList')")
     public Object findCountryList(@RequestBody(required = false) FindCountryParam findCountryParam) {
         if (findCountryParam == null) {
             findCountryParam = FindCountryParam.builder().build();
         }
-        List<CountryDTO> countryDTOList = countryService.findCountryList(findCountryParam);
+        QueryPage queryPage = initQueryPage(findCountryParam);
+        List<CountryDTO> countryDTOList = countryService.findCountryList(findCountryParam,queryPage);
         List<FindCountryResult> findCountryResultList = processCountryInfo(countryDTOList);
-        return returnSuccess("查询国家列表成功!",findCountryResultList);
+        return returnSuccessListByPage(findCountryResultList, queryPage, "查询国家列表成功!");
     }
 
     /**
@@ -77,11 +80,10 @@ public class CountryAction extends BaseAction {
 
     @RequestMapping("findCountrySelect")
     @CommonBusiness(logRemark = "查询国家下拉")
-    @PreAuthorize("hasAuthority('userAction:findCountrySelect')")
-    public Object findCountrySelect() {
+    @PreAuthorize("hasAuthority('countryAction:findCountrySelect')")
+    public Object findCountrySelect(@RequestBody(required = false) FindCountryParam findCountryParam) {
         List<CountryDTO> countryDTOList = countryService.findCountrySelect();
         List<FindCountryResult> findCountryResultList = processCountryInfo(countryDTOList);
-//        return returnSuccessListByPage(findCountryResultList, queryPage, "查询国家列表成功!");
         return returnSuccess("查询国家下拉成功!",findCountryResultList);
     }
 
@@ -94,7 +96,7 @@ public class CountryAction extends BaseAction {
      */
     @RequestMapping("addCountry")
     @CommonBusiness(logRemark = "创建国家")
-    @PreAuthorize("hasAuthority('userAction:addCountry')")
+    @PreAuthorize("hasAuthority('countryAction:addCountry')")
     public Object addCountry(@RequestBody(required = false) AddCountryParam addCountryParam){
         String checkError = checkAddCountry(addCountryParam);
         if (StringUtils.isNotBlank(checkError)) {
@@ -124,7 +126,7 @@ public class CountryAction extends BaseAction {
      */
     @RequestMapping("queryCountryById")
     @CommonBusiness(logRemark = "根据id查询国家")
-    @PreAuthorize("hasAuthority('userAction:queryCountryById')")
+    @PreAuthorize("hasAuthority('countryAction:queryCountryById')")
     public Object queryCountryById(@RequestBody(required = false) QueryCountryParam queryCountryParam) {
         if (queryCountryParam == null || queryCountryParam.getCountryId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择查询id!");
@@ -144,7 +146,7 @@ public class CountryAction extends BaseAction {
      */
     @RequestMapping("updateCountry")
     @CommonBusiness(logRemark = "修改国家")
-    @PreAuthorize("hasAuthority('userAction:updateCountry')")
+    @PreAuthorize("hasAuthority('countryAction:updateCountry')")
     public Object updateCountry(@RequestBody(required = false) UpdateCountryParam updateCountryParam) {
         String checkResult = checkUpdateCountry(updateCountryParam);
         if (StringUtils.isNotBlank(checkResult)) {
@@ -178,7 +180,7 @@ public class CountryAction extends BaseAction {
      */
     @RequestMapping("deleteCountry")
     @CommonBusiness(logRemark = "删除国家")
-    @PreAuthorize("hasAuthority('userAction:deleteCountry')")
+    @PreAuthorize("hasAuthority('countryAction:deleteCountry')")
     public Object deleteCountry(@RequestBody(required = false) DeleteCountryParam deleteCountryParam) {
         if (deleteCountryParam == null || deleteCountryParam.getCountryId() == null) {
             return returnFail(ResultCode.AUTH_PARAM_ERROR, "请选择删除国家");

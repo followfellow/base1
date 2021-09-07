@@ -3,11 +3,11 @@ package com.demo.base.provinceManager.service;
 import cn.hutool.core.collection.CollectionUtil;
 import com.demo.action.service.BaseServiceImpl;
 import com.demo.base.provinceManager.dao.ProvinceDao;
-import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
 import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -94,9 +94,24 @@ public class ProvinceServiceImpl extends BaseServiceImpl implements ProvinceServ
         return CollectionUtil.isNotEmpty(provinceDao.findProvinceByName(provinceName, provinceId));
     }
 
+    @Override
+    public List<FindAreaResult> findProvinceNode(FindAreaTreeParam findAreaTreeParam) {
+        return provinceDao.findProvinceNode(findAreaTreeParam);
+    }
 
     @Override
-    public List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam) {
-        return provinceDao.findAreaList(findAreaTreeParam);
+    public List<FindAreaResult> findCityNode(FindAreaTreeParam findAreaTreeParam) {
+        return provinceDao.findCityNode(findAreaTreeParam);
     }
+
+    @Override
+    public List<FindAreaResult> findDistrictNode(FindAreaTreeParam findAreaTreeParam) {
+        return provinceDao.findDistrictNode(findAreaTreeParam);
+    }
+
+    @Override
+    public List<ProvinceDTO> findProvinceSelect(FindProvinceParam findProvinceParam) {
+        return provinceDao.findProvinceSelect(findProvinceParam);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.demo.base.countryManager.dao;
 
+import com.demo.action.vo.QueryPage;
 import com.demo.base.countryManager.dto.CountryDTO;
 import com.demo.base.countryManager.request.FindCountryParam;
 import com.demo.contants.Constants;
@@ -27,14 +28,14 @@ public class CountryDaoMysqlImpl extends BaseDAOHibernateImpl implements Country
      * @return java.util.List<com.demo.base.countryManager.dto.CountryDTO>
      */
     @Override
-    public List<CountryDTO> findCountryList(FindCountryParam findCountryParam) {
+    public List<CountryDTO> findCountryList(FindCountryParam findCountryParam, QueryPage queryPage) {
         String sql = "select countryId,countryName,countryChar,threeBitCode,twoBitCode,updatedDate,updatedUser from pub_country_t where 1 = 1";
         if (findCountryParam != null) {
             if (!StringUtils.isEmpty(findCountryParam.getCountryId())) {
                 sql += " and countryId = '" + findCountryParam.getCountryId() + "' ";
             }
         }
-        return findObjectBySql(sql, CountryDTO.class);
+        return findObjectBySql(sql, CountryDTO.class,queryPage);
     }
 
     /*

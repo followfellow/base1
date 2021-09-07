@@ -1,10 +1,10 @@
 package com.demo.base.provinceManager.service;
 
-import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.po.ProvinceDO;
 import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
 
 import java.util.List;
 
@@ -72,6 +72,11 @@ public interface ProvinceService {
      */
     boolean checkNameIfExist(String provinceName, Long provinceId);
 
-    List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam);
+    List<FindAreaResult> findProvinceNode(FindAreaTreeParam findAreaTreeParam);
 
+    List<FindAreaResult> findCityNode(FindAreaTreeParam findAreaTreeParam);
+
+    List<FindAreaResult> findDistrictNode(FindAreaTreeParam findAreaTreeParam);
+
+    List<ProvinceDTO> findProvinceSelect(FindProvinceParam findProvinceParam);
 }

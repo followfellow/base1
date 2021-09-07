@@ -1,9 +1,9 @@
 package com.demo.base.provinceManager.dao;
 
-import com.demo.base.provinceManager.dto.AreaDTO;
 import com.demo.base.provinceManager.dto.ProvinceDTO;
 import com.demo.base.provinceManager.request.FindAreaTreeParam;
 import com.demo.base.provinceManager.request.FindProvinceParam;
+import com.demo.base.provinceManager.response.FindAreaResult;
 import com.demo.dbutils.BaseDAOHibernateImpl;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Repository;
@@ -27,12 +27,12 @@ public class ProvinceDaoImpl extends BaseDAOHibernateImpl implements ProvinceDao
      */
     @Override
     public List<ProvinceDTO> findProvinceList(FindProvinceParam findProvinceParam) {
-        String sql = "select provinceId, provinceName,provinceChar,certificateNo" +
+        String sql = "select provinceId, provinceName, certificateNo" +
                 " from pub_province_t  where 1 =  1";
         if (findProvinceParam.getProvinceId() != null) {
             sql += " and provinceId = " + findProvinceParam.getProvinceId();
         }
-        sql += " order by updatedDate desc ";
+//        sql += " order by updatedDate desc ";
         return findObjectBySql(sql, ProvinceDTO.class);
     }
 
@@ -47,26 +47,31 @@ public class ProvinceDaoImpl extends BaseDAOHibernateImpl implements ProvinceDao
     }
 
     @Override
-    public List<AreaDTO> findAreaList(FindAreaTreeParam findAreaTreeParam) {
-        String sql = " SELECT t1.provinceId,t1.provinceName " +
-                " ,t2.cityId,t2.cityName " +
-                " ,t3.districtId,t3.districtName " +
-                " FROM pub_province_t t1 " +
-                " LEFT JOIN pub_city_t t2 ON t1.provinceId = t2.provinceId " +
-                " LEFT JOIN pub_district_t t3 ON t2.cityId = t3.cityId " +
-                " WHERE 1 = 1 ";
-        if (findAreaTreeParam.getProvinceId()!=null){
-            sql += " AND t1.provinceId = " + findAreaTreeParam.getProvinceId();
-        }
-        if (findAreaTreeParam.getCityId()!=null){
-            sql += " AND t2.cityId = " + findAreaTreeParam.getCityId();
-        }
-        if (findAreaTreeParam.getDistrictId()!=null){
-            sql += " AND t3.districtId = " + findAreaTreeParam.getDistrictId();
-        }
+    public List<FindAreaResult> findProvinceNode(FindAreaTreeParam findAreaTreeParam) {
+        String sql = "select provinceId id, provinceName title, certificateNo no"+
+                " from pub_province_t where 1 = 1";
+        return findObjectBySql(sql, FindAreaResult.class);
+    }
 
+    @Override
+    public List<FindAreaResult> findCityNode(FindAreaTreeParam findAreaTreeParam) {
+        String sql = "select cityId id, cityName title, provinceId pid, certificateNo no"+
+                " from pub_city_t where 1 = 1";
+        return findObjectBySql(sql, FindAreaResult.class);
+    }
 
-        return findObjectBySql(sql, AreaDTO.class);
+    @Override
+    public List<FindAreaResult> findDistrictNode(FindAreaTreeParam findAreaTreeParam) {
+        String sql = "select districtId id, districtName title, cityId pid, certificateNo no"+
+                " from pub_district_t where 1 = 1";
+        return findObjectBySql(sql, FindAreaResult.class);
+    }
+
+    @Override
+    public List<ProvinceDTO> findProvinceSelect(FindProvinceParam findProvinceParam) {
+        String sql = "select provinceId, provinceName" +
+                " from pub_province_t  where 1 =  1";
+        return findObjectBySql(sql, ProvinceDTO.class);
     }
 
 }

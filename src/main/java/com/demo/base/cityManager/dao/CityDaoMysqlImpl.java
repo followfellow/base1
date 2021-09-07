@@ -33,8 +33,6 @@ public class CityDaoMysqlImpl extends BaseDAOHibernateImpl implements CityDao {
                 sql += " and provinceId = '" + findCityParam.getProvinceId() + "' ";
             }
         }
-//        sql += " and businessId = " + findCountryParam.getBusinessId();
-//        return findObjectBySql(sql, CityDTO.class,queryPage);
         return findObjectBySql(sql, CityDTO.class);
     }
 
@@ -53,6 +51,17 @@ public class CityDaoMysqlImpl extends BaseDAOHibernateImpl implements CityDao {
         }
 //        sql += " and businessId = " + getCurrUserOrgId();
         sql += " limit 1  ";
+        return findObjectBySql(sql, CityDTO.class);
+    }
+
+    @Override
+    public List<CityDTO> findCitySelect(FindCityParam findCityParam) {
+        String sql = "select cityId,cityName from pub_city_t where 1 = 1";
+        if (findCityParam != null) {
+            if (!StringUtils.isEmpty(findCityParam.getProvinceId())) {
+                sql += " and provinceId = '" + findCityParam.getProvinceId() + "' ";
+            }
+        }
         return findObjectBySql(sql, CityDTO.class);
     }
 }

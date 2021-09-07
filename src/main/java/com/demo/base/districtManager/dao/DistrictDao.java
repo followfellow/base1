@@ -28,4 +28,6 @@ public interface DistrictDao extends BaseDAO {
      * @return java.util.List<com.demo.base.districtManager.dto.DistrictDTO>
      */
     List<DistrictDTO> finddistrictByName(String districtName, Long districtId);
+
+    List<DistrictDTO> findDistrictSelect(FindDistrictParam findDistrictParam);
 }

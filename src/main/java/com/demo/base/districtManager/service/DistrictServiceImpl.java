@@ -55,4 +55,9 @@ public class DistrictServiceImpl extends BaseServiceImpl implements DistrictServ
     public boolean checkNameIfExist(String districtName, Long districtId) {
         return CollectionUtil.isNotEmpty(districtDao.finddistrictByName(districtName, districtId));
     }
+
+    @Override
+    public List<DistrictDTO> findDistrictSelect(FindDistrictParam findDistrictParam) {
+        return districtDao.findDistrictSelect(findDistrictParam);
+    }
 }
